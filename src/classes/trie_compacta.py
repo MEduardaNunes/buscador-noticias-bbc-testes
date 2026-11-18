@@ -47,6 +47,9 @@ class No:
         if chave[0] < 0 or chave[1] < 0:
             raise ValueError("Valores das chaves devem ser não negativos.")
 
+        if posicao_no_doc < 0:
+            raise ValueError("Valor da posição no documento deve se rnão negativa.")
+
         if chave in self.documentos:
             self.documentos[chave]["frequencia"] += 1
 
