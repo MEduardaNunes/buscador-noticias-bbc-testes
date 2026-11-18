@@ -47,6 +47,9 @@ class No:
         if chave[0] < 0 or chave[1] < 0:
             raise ValueError("Valores das chaves devem ser não negativos.")
 
+        if not isinstance(posicao_no_doc, int):
+            raise TypeError(f"Valor de posição esperada int, recebido {type(posicao_no_doc).__name__}")
+
         if posicao_no_doc < 0:
             raise ValueError("Valor da posição no documento deve se rnão negativa.")
 
