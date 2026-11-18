@@ -38,11 +38,8 @@ class No:
             chave (tuple[int, int]): tupla (seção, número) de um documento.
             posicao_no_doc (int): posição dentro do documento da palavra.
         """
-        if len(chave) != 2:
-            raise ValueError("Chave deve conter exatamente dois valores (seção, número do texto)")
-            
-        if not isinstance(chave[0], int) or not isinstance(chave[1], int):
-            raise TypeError(f"Valores das chaves devem ser int, recebido {type(chave[0]).__name__} e {type(chave[1]).__name__}")
+        if not isinstance(chave, tuple) or len(chave) != 2 or not all(isinstance(x, int) for x in chave):
+            raise TypeError(f"Chave deve ser do tipo tuple[int, int], recebido {type(chave)}")
 
         if chave[0] < 0 or chave[1] < 0:
             raise ValueError("Valores das chaves devem ser não negativos.")
