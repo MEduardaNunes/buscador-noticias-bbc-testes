@@ -58,3 +58,28 @@ class No:
                 "frequencia": 1,
                 "primeira_posicao": posicao_no_doc
             }
+
+
+def prefixo_comum(string_um : str | None, string_dois : str | None):
+    """
+    Retorna o maior prefixo em comum de duas strings.
+        
+    Parâmetros:
+        string_um (string): primeira string.
+        string_dois (string): segunda string.
+
+    Retorna:
+        O prefixo em comum.
+    """
+    if string_um is None or string_dois is None:
+        return ""
+
+    if not isinstance(string_um, str) or not isinstance(string_dois, str):
+        raise TypeError(f"Parâmetros devem ser strings ou None mas recebeu {type(string_um).__name__} e {type(string_dois).__name__}")
+
+    i = 0
+    while (i < len(string_um) and i < len(string_dois) and string_um[i] == string_dois[i]):
+        i += 1
+
+    return string_um[:i]
+
