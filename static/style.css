@@ -365,6 +365,18 @@ a.resultado-link:hover .resultado-item {
     display: block;
 }
 
+#perfil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#perfil img {
+    height: 28px;
+    width: auto;
+    display: block;
+}
+
 #botao-voltar {
     display: inline-flex; 
     align-items: center;

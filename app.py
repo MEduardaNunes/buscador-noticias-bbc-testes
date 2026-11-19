@@ -28,6 +28,11 @@ def ajuda():
     """Página de ajuda sobre operadores e consultas."""
     return "Ajuda sobre consultas e operadores", 200
 
+@app.route('/perfil', methods=['GET'])
+def perfil():
+    """Página de perfil do usuário"""
+    return "Perfil", 200
+
 
 @app.route('/search', methods=['POST'])
 def search_results():
