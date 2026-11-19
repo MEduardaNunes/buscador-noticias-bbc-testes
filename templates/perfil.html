@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class = "container">
+        <div class = "item">
+            <button id = "botao-voltar" onclick = "window.history.back()"> 
+                <img src="{{ url_for('static', filename='voltar.png') }}" alt="Voltar">
+            </button>
+        </div>
+
+        <div class = "item">
+            <a href = "{{ url_for('perfil') }}">
+                <button id = "perfil">
+                    <img src="{{ url_for('static', filename='perfil.png') }}" alt="perfil">
+                </button>
+            </a>
+        </div>
+
+        <div class = "item">
+            <a href = "{{ url_for('historico') }}">
+                <button id = "historico">
+                    <img src="{{ url_for('static', filename='historico.png') }}" alt="Histórico">
+                </button>
+            </a>
+        </div>
+
+        <div class = "item">
+            <a href = "{{ url_for('ajuda') }}">
+                <button id = "ajuda"> 
+                    <img src="{{ url_for('static', filename='ajuda.png') }}" alt="Ajuda">
+                </button>
+            </a>
+        </div>
+
+        <div class = "item">
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button type="submit" id="logout">
+                    <img src="{{ url_for('static', filename='logout.png') }}" alt="Logout">
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <main class="central auth-central">
+        <h1>Meu perfil</h1>
+
+        <section class="auth-panel" aria-label="Editar perfil">
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% for categoria, mensagem in mensagens %}
+                    <p class="auth-mensagem {{ categoria }}" role="status">{{ mensagem }}</p>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('perfil') }}" class="auth-form">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" value="{{ perfil['nome'] }}" autocomplete="name" required>
+
+                <label for="usuario">Usuário</label>
+                <input type="text" id="usuario" name="usuario" value="{{ perfil['usuario'] }}" autocomplete="username" required>
+
+                <label for="senha">Nova senha</label>
+                <input type="password" id="senha" name="senha" autocomplete="new-password" minlength="6" placeholder="Deixe em branco para manter">
+
+                <label for="confirmar_senha">Confirmar nova senha</label>
+                <input type="password" id="confirmar_senha" name="confirmar_senha" autocomplete="new-password" minlength="6">
+
+                <button type="submit" id="botao-busca">Salvar alterações</button>
+            </form>
+
+            <form
+                method="POST"
+                action="{{ url_for('deletar_perfil') }}"
+                class="perfil-excluir"
+                onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')"
+            >
+                <button type="submit" class="botao-excluir">Excluir conta</button>
+            </form>
+
+        </section>
+    </main>
+</body>
+
+</html>

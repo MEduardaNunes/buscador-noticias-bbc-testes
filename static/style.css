@@ -372,7 +372,7 @@ a.resultado-link:hover .resultado-item {
 }
 
 #perfil img {
-    height: 28px;
+    height: 24px;
     width: auto;
     display: block;
 }
@@ -384,7 +384,7 @@ a.resultado-link:hover .resultado-item {
 }
 
 #logout img {
-    height: 28px;
+    height: 24px;
     width: auto;
     display: block;
 }
@@ -469,6 +469,30 @@ a.resultado-link:hover .resultado-item {
 .auth-mensagem.sucesso {
     background: #ddeedc;
     color: #315d30;
+}
+
+.perfil-excluir {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e1d7dc;
+}
+
+.botao-excluir {
+    width: 100%;
+    background: #9e2f2f;
+}
+
+.botao-excluir:hover {
+    background: #7d2424;
+}
+
+.perfil-voltar {
+    margin-top: 14px;
+    text-align: center;
+}
+
+.perfil-voltar a {
+    color: #4a0638;
 }
 
 #botao-voltar {

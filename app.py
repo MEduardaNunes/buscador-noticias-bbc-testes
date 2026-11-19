@@ -129,10 +129,92 @@ def ajuda():
     """Página de ajuda sobre operadores e consultas."""
     return "Ajuda sobre consultas e operadores", 200
 
-@app.route('/perfil', methods=['GET'])
+@app.route('/perfil', methods=['GET', 'POST'])
 def perfil():
-    """Página de perfil do usuário"""
-    return "Perfil", 200
+    """Exibe e atualiza os dados do usuário autenticado."""
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    usuario_atual = session['usuario']
+
+    with get_db() as conexao:
+        registro = conexao.execute(
+            'SELECT id, nome, usuario, senha_hash FROM usuarios WHERE usuario = ?',
+            (usuario_atual,),
+        ).fetchone()
+
+    if registro is None:
+        session.clear()
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        nome = request.form.get('nome', '').strip()
+        novo_usuario = request.form.get('usuario', '').strip()
+        nova_senha = request.form.get('senha', '')
+        confirmar_senha = request.form.get('confirmar_senha', '')
+
+        if not nome or not novo_usuario:
+            flash('Nome e usuário são obrigatórios.', 'erro')
+            return render_template('perfil.html', perfil=registro), 400
+
+        if novo_usuario != usuario_atual:
+            with get_db() as conexao:
+                usuario_existente = conexao.execute(
+                    'SELECT id FROM usuarios WHERE usuario = ?',
+                    (novo_usuario,),
+                ).fetchone()
+
+            if usuario_existente is not None:
+                flash('Este nome de usuário já está cadastrado.', 'erro')
+                return render_template('perfil.html', perfil=registro), 409
+
+        senha_hash = registro['senha_hash']
+        if nova_senha:
+            if nova_senha != confirmar_senha:
+                flash('As senhas não coincidem.', 'erro')
+                return render_template('perfil.html', perfil=registro), 400
+
+            if len(nova_senha) < 6:
+                flash('A senha deve ter pelo menos 6 caracteres.', 'erro')
+                return render_template('perfil.html', perfil=registro), 400
+
+            senha_hash = generate_password_hash(nova_senha)
+
+        with get_db() as conexao:
+            conexao.execute(
+                'UPDATE usuarios SET nome = ?, usuario = ?, senha_hash = ? WHERE id = ?',
+                (nome, novo_usuario, senha_hash, registro['id']),
+            )
+
+        session['usuario'] = novo_usuario
+        session['nome'] = nome
+        flash('Perfil atualizado com sucesso.', 'sucesso')
+
+        with get_db() as conexao:
+            registro = conexao.execute(
+                'SELECT id, nome, usuario, senha_hash FROM usuarios WHERE id = ?',
+                (registro['id'],),
+            ).fetchone()
+
+        return render_template('perfil.html', perfil=registro)
+
+    return render_template('perfil.html', perfil=registro)
+
+
+@app.route('/perfil/deletar', methods=['POST'])
+def deletar_perfil():
+    """Exclui definitivamente o usuário autenticado."""
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    usuario_atual = session['usuario']
+
+    with get_db() as conexao:
+        conexao.execute('DELETE FROM usuarios WHERE usuario = ?', (usuario_atual,))
+
+    session.clear()
+    flash('Sua conta foi excluída.', 'sucesso')
+    return redirect(url_for('login'))
 
 
 @app.route('/search', methods=['POST'])
