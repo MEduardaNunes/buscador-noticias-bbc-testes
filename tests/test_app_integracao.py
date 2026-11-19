@@ -1,0 +1,216 @@
+import pytest
+
+import app
+
+
+@pytest.fixture
+def cliente(tmp_path, monkeypatch):
+    banco = tmp_path / "usuarios-teste.db"
+    monkeypatch.setattr(app, "DATABASE", str(banco))
+    app.inicializar_banco()
+
+    app.app.config.update(TESTING=True, SECRET_KEY="chave-teste")
+    with app.app.test_client() as client:
+        yield client
+
+
+def cadastrar(client, nome="Ana Silva", usuario="ana", senha="123456"):
+    return client.post(
+        "/criar-usuario",
+        data={
+            "nome": nome,
+            "usuario": usuario,
+            "senha": senha,
+            "confirmar_senha": senha,
+        },
+        follow_redirects=False,
+    )
+
+
+def entrar(client, usuario="ana", senha="123456"):
+    return client.post(
+        "/login",
+        data={"usuario": usuario, "senha": senha},
+        follow_redirects=False,
+    )
+
+
+def test_home_redireciona_usuario_nao_autenticado(cliente):
+    resposta = cliente.get("/", follow_redirects=False)
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith("/login")
+
+
+def test_login_renderiza_tela_sem_sessao(cliente):
+    resposta = cliente.get("/login")
+
+    assert resposta.status_code == 200
+    assert b"Logar" in resposta.data
+
+
+def test_criar_usuario_e_fazer_login(cliente):
+    cadastro = cadastrar(cliente)
+    login = entrar(cliente)
+
+    assert cadastro.status_code == 302
+    assert cadastro.location.endswith("/login")
+    assert login.status_code == 302
+    assert login.location.endswith("/")
+
+    with cliente.session_transaction() as sessao:
+        assert sessao["usuario"] == "ana"
+        assert sessao["nome"] == "Ana Silva"
+
+
+def test_login_rejeita_senha_incorreta(cliente):
+    cadastrar(cliente)
+
+    resposta = entrar(cliente, senha="senhaerrada")
+
+    assert resposta.status_code == 401
+    assert b"Usu\xc3\xa1rio ou senha inv\xc3\xa1lidos" in resposta.data
+
+
+def test_usuario_duplicado_nao_pode_ser_cadastrado(cliente):
+    cadastrar(cliente)
+
+    resposta = cadastrar(cliente, nome="Outra Ana", usuario="ana")
+
+    assert resposta.status_code == 409
+    assert b"j\xc3\xa1 est\xc3\xa1 cadastrado" in resposta.data
+
+
+def test_cadastro_valida_campos_obrigatorios(cliente):
+    resposta = cliente.post(
+        "/criar-usuario",
+        data={"nome": "", "usuario": "", "senha": "", "confirmar_senha": ""},
+    )
+
+    assert resposta.status_code == 400
+
+
+def test_cadastro_valida_confirmacao_e_tamanho_da_senha(cliente):
+    senha_diferente = cliente.post(
+        "/criar-usuario",
+        data={"nome": "Ana", "usuario": "ana", "senha": "123456", "confirmar_senha": "654321"},
+    )
+    senha_curta = cliente.post(
+        "/criar-usuario",
+        data={"nome": "Ana", "usuario": "ana", "senha": "123", "confirmar_senha": "123"},
+    )
+
+    assert senha_diferente.status_code == 400
+    assert b"n\xc3\xa3o coincidem" in senha_diferente.data
+    assert senha_curta.status_code == 400
+    assert b"6 caracteres" in senha_curta.data
+
+
+def test_pagina_perfil_exibe_usuario_autenticado(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.get("/perfil")
+
+    assert resposta.status_code == 200
+    assert b"Ana Silva" in resposta.data
+    assert b"ana" in resposta.data
+
+
+def test_perfil_redireciona_sem_sessao(cliente):
+    resposta = cliente.get("/perfil", follow_redirects=False)
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith("/login")
+
+
+def test_perfil_aceita_duplicidade_de_usuario(cliente):
+    cadastrar(cliente)
+    cadastrar(cliente, nome="Bia", usuario="bia")
+    entrar(cliente)
+
+    resposta = cliente.post(
+        "/perfil",
+        data={"nome": "Ana Nova", "usuario": "bia", "senha": "", "confirmar_senha": ""},
+    )
+
+    assert resposta.status_code == 409
+    assert b"j\xc3\xa1 est\xc3\xa1 cadastrado" in resposta.data
+
+
+def test_perfil_atualiza_nome_usuario_e_senha(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post(
+        "/perfil",
+        data={
+            "nome": "Ana Nova",
+            "usuario": "ana-nova",
+            "senha": "654321",
+            "confirmar_senha": "654321",
+        },
+        follow_redirects=False,
+    )
+
+    assert resposta.status_code == 200
+
+    with cliente.session_transaction() as sessao:
+        assert sessao["usuario"] == "ana-nova"
+        assert sessao["nome"] == "Ana Nova"
+
+    cliente.post("/logout")
+    login_novo = entrar(cliente, usuario="ana-nova", senha="654321")
+
+    assert login_novo.status_code == 302
+
+
+def test_perfil_valida_confirmacao_da_nova_senha(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post(
+        "/perfil",
+        data={"nome": "Ana", "usuario": "ana", "senha": "654321", "confirmar_senha": "123456"},
+    )
+
+    assert resposta.status_code == 400
+    assert b"n\xc3\xa3o coincidem" in resposta.data
+
+
+def test_logout_limpa_sessao_e_redireciona(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post("/logout", follow_redirects=False)
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith("/login")
+
+    with cliente.session_transaction() as sessao:
+        assert "usuario" not in sessao
+
+
+def test_deletar_perfil_exclui_usuario_e_limpa_sessao(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post("/perfil/deletar", follow_redirects=False)
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith("/login")
+
+    with cliente.session_transaction() as sessao:
+        assert "usuario" not in sessao
+
+    novo_login = entrar(cliente)
+    assert novo_login.status_code == 401
+
+
+def test_busca_rejeita_mensagem_vazia(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post("/search", data={"mensagem": "   "})
+
+    assert resposta.status_code == 400
