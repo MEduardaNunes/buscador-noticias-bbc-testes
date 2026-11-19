@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Acesso</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <main class="central auth-central">
+        <h1>Máquina de Busca</h1>
+
+        <section class="auth-panel" aria-label="Acesso à conta">
+            <nav class="auth-tabs" aria-label="Opções de acesso">
+                <a class="{{ 'ativo' if modo == 'login' else '' }}" href="{{ url_for('login') }}">Logar</a>
+                <a class="{{ 'ativo' if modo == 'criar' else '' }}" href="{{ url_for('criar_usuario') }}">Criar conta</a>
+            </nav>
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% for categoria, mensagem in mensagens %}
+                    <p class="auth-mensagem {{ categoria }}" role="status">{{ mensagem }}</p>
+                {% endfor %}
+            {% endwith %}
+
+            {% if modo == 'criar' %}
+                <form method="POST" action="{{ url_for('criar_usuario') }}" class="auth-form">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" autocomplete="name" required>
+
+                    <label for="usuario">Usuário</label>
+                    <input type="text" id="usuario" name="usuario" autocomplete="username" required>
+
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" autocomplete="new-password" minlength="6" required>
+
+                    <label for="confirmar_senha">Confirmar senha</label>
+                    <input type="password" id="confirmar_senha" name="confirmar_senha" autocomplete="new-password" minlength="6" required>
+
+                    <button type="submit" id="botao-busca">Criar usuário</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+                    <label for="usuario">Usuário</label>
+                    <input type="text" id="usuario" name="usuario" autocomplete="username" required>
+
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" autocomplete="current-password" required>
+
+                    <button type="submit" id="botao-busca">Entrar</button>
+                </form>
+            {% endif %}
+        </section>
+    </main>
+</body>
+
+</html>
