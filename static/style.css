@@ -377,6 +377,18 @@ a.resultado-link:hover .resultado-item {
     display: block;
 }
 
+#logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#logout img {
+    height: 28px;
+    width: auto;
+    display: block;
+}
+
 .auth-central {
     max-width: 520px;
     margin: 0 auto;

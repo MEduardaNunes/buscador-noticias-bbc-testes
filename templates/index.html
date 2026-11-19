@@ -32,11 +32,15 @@
                 </button>
             </a>
         </div>
+
+        <div class = "item">
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button type="submit" id="logout">
+                    <img src="{{ url_for('static', filename='logout.png') }}" alt="Logout">
+                </button>
+            </form>
+        </div>
     </div>
-    
-    <form method="POST" action="{{ url_for('logout') }}" style="text-align: right;">
-        <button type="submit">Sair</button>
-    </form>
 
     <div class="central">
         <h1> Máquina de Busca </h1>
