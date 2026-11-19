@@ -126,3 +126,102 @@ def test_arvore_rejeita_consulta_invalida(query):
 def test_arvore_rejeita_query_tipo_incorreto(query):
     with pytest.raises(TypeError):
         ArvoreParsing(query)
+
+
+
+def test_token_atual_retorna_none_apos_fim():
+    arvore = ArvoreParsing("teste")
+
+    arvore.consome_token()
+
+    assert arvore.token_atual() is None
+
+
+def test_consume_token_rejeita_fim_inesperado():
+    arvore = ArvoreParsing("NOT")
+    arvore.consome_token("NOT")
+
+    with pytest.raises(ValueError, match="Fim inesperado de tokens"):
+        arvore.consome_token("teste")
+
+
+def test_consume_token_rejeita_token_diferente():
+    arvore = ArvoreParsing("teste")
+
+    with pytest.raises(ValueError, match="Token esperado"):
+        arvore.consome_token("AND")
+
+
+def test_parse_or_retorna_none_sem_primeira_expressao(monkeypatch):
+    arvore = ArvoreParsing("a")
+    monkeypatch.setattr(arvore, "parse_and", lambda: None)
+
+    assert arvore.parse_or() is None
+
+
+def test_parse_or_rejeita_expressao_ausente_apos_or(monkeypatch):
+    arvore = ArvoreParsing("a OR")
+    arvore.pos = 1
+    resultados = iter([NoParsing("a"), None])
+    monkeypatch.setattr(arvore, "parse_and", lambda: next(resultados))
+
+    with pytest.raises(ValueError, match="após OR"):
+        arvore.parse_or()
+
+
+def test_parse_and_retorna_none_sem_primeira_expressao(monkeypatch):
+    arvore = ArvoreParsing("a")
+    monkeypatch.setattr(arvore, "parse_not", lambda: None)
+
+    assert arvore.parse_and() is None
+
+
+def test_parse_and_rejeita_expressao_ausente_apos_and(monkeypatch):
+    arvore = ArvoreParsing("a AND")
+    arvore.pos = 1
+    resultados = iter([NoParsing("a"), None])
+    monkeypatch.setattr(arvore, "parse_not", lambda: next(resultados))
+
+    with pytest.raises(ValueError, match="após AND"):
+        arvore.parse_and()
+
+
+def test_parse_not_rejeita_not_sem_expressao():
+    arvore = ArvoreParsing("NOT")
+
+    with pytest.raises(ValueError, match="após NOT"):
+        arvore.gera_parsing_tokens()
+
+
+def test_parse_not_rejeita_expressao_nula(monkeypatch):
+    arvore = ArvoreParsing("NOT a")
+    arvore.pos = 0
+    monkeypatch.setattr(arvore, "parse_not", lambda: None)
+
+    with pytest.raises(ValueError, match="após NOT"):
+        ArvoreParsing.parse_not(arvore)
+
+
+def test_parenteses_rejeitam_expressao_nula(monkeypatch):
+    arvore = ArvoreParsing("(a)")
+    arvore.pos = 0
+    monkeypatch.setattr(arvore, "parse_exp", lambda: None)
+
+    with pytest.raises(ValueError, match="Expressão do parênteses não existe"):
+        arvore.parse_subexp()
+
+
+def test_gera_parsing_rejeita_expressao_nula(monkeypatch):
+    arvore = ArvoreParsing("a")
+    monkeypatch.setattr(arvore, "parse_exp", lambda: None)
+
+    with pytest.raises(ValueError, match="parsing falhou"):
+        arvore.gera_parsing_tokens()
+
+
+@pytest.mark.parametrize("query", ["a OR", "a AND", "NOT"])
+def test_operadores_sem_expressao_rejeitam_consulta(query):
+    arvore = ArvoreParsing(query)
+
+    with pytest.raises(ValueError):
+        arvore.gera_parsing_tokens()
