@@ -20,11 +20,11 @@ run: venv
 	PORT=$(PORT) $(PYTHON) app.py
 
 test-unit: venv
-    $(PYTEST) tests/test_arvore_parsing.py tests/test_trie_compacta.py tests/test_utils.py
+	$(PYTEST) tests/unit/
 
 test-integration: venv
-    $(PYTEST) tests/test_app_integracao.py
-
+	$(PYTEST) tests/integration/
+	
 test-all: test-unit test-integration
 
 coverage: venv
