@@ -1,5 +1,5 @@
 import pytest
-from src.search import NoParsing
+from src.search import ArvoreParsing, NoParsing
 
 @pytest.mark.parametrize(
     ("operador", "direita", "esquerda"),
@@ -55,3 +55,74 @@ def test_palavra_reconhecida_no_operador(operador):
     no = NoParsing(operador = operador)
 
     assert no.operador == operador
+
+
+def test_arvore_mantem_ordem_esquerda_direita_em_and():
+    arvore = ArvoreParsing("a AND b")
+
+    raiz = arvore.gera_parsing_tokens()
+
+    assert raiz.operador == "AND"
+    assert raiz.esquerda.operador == "a"
+    assert raiz.direita.operador == "b"
+
+
+def test_arvore_mantem_ordem_esquerda_direita_em_or():
+    arvore = ArvoreParsing("a OR b")
+
+    raiz = arvore.gera_parsing_tokens()
+
+    assert raiz.operador == "OR"
+    assert raiz.esquerda.operador == "a"
+    assert raiz.direita.operador == "b"
+
+
+def test_arvore_respeita_precedencia_not_and_or():
+    arvore = ArvoreParsing("NOT a AND b OR c")
+
+    raiz = arvore.gera_parsing_tokens()
+
+    assert raiz.operador == "OR"
+    assert raiz.esquerda.operador == "AND"
+    assert raiz.esquerda.esquerda.operador == "NOT"
+    assert raiz.esquerda.direita.operador == "b"
+    assert raiz.direita.operador == "c"
+
+
+def test_arvore_respeita_parenteses():
+    arvore = ArvoreParsing("(a OR b) AND c")
+
+    raiz = arvore.gera_parsing_tokens()
+
+    assert raiz.operador == "AND"
+    assert raiz.esquerda.operador == "OR"
+    assert raiz.esquerda.esquerda.operador == "a"
+    assert raiz.esquerda.direita.operador == "b"
+    assert raiz.direita.operador == "c"
+
+
+def test_gera_parsing_tokens_pode_ser_chamada_novamente():
+    arvore = ArvoreParsing("a AND b")
+
+    primeira_raiz = arvore.gera_parsing_tokens()
+    segunda_raiz = arvore.gera_parsing_tokens()
+
+    assert segunda_raiz is not primeira_raiz
+    assert repr(segunda_raiz) == "(a AND b)"
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["", "a b", "a AND", "AND a", "()", "(a", "a)", "a OR OR b"],
+)
+def test_arvore_rejeita_consulta_invalida(query):
+    arvore = ArvoreParsing(query)
+
+    with pytest.raises(ValueError):
+        arvore.gera_parsing_tokens()
+
+
+@pytest.mark.parametrize("query", [1.0, None, True, ["a"]])
+def test_arvore_rejeita_query_tipo_incorreto(query):
+    with pytest.raises(TypeError):
+        ArvoreParsing(query)
