@@ -3,6 +3,7 @@ VENV_DIR = .venv
 PYTHON = $(VENV_DIR)/bin/python
 PIP = $(VENV_DIR)/bin/pip
 PYTEST = $(PYTHON) -m pytest
+PORT ?= 5000
 
 .PHONY: venv test-all coverage clean
 
@@ -14,6 +15,9 @@ venv:
 		echo "Ambiente virtual já existe."; \
 	fi
 	$(PIP) install -r requirements.txt
+
+run: venv
+	PORT=$(PORT) $(PYTHON) app.py
 
 test-all: venv
 	$(PYTEST) -v tests/
