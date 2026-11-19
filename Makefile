@@ -19,11 +19,16 @@ venv:
 run: venv
 	PORT=$(PORT) $(PYTHON) app.py
 
-test-all: venv
-	$(PYTEST) -v tests/
+test-unit: venv
+    $(PYTEST) tests/test_arvore_parsing.py tests/test_trie_compacta.py tests/test_utils.py
+
+test-integration: venv
+    $(PYTEST) tests/test_app_integracao.py
+
+test-all: test-unit test-integration
 
 coverage: venv
-	$(PYTEST) tests/ --cov=src --cov-report=term-missing
+	$(PYTEST) tests/ --cov=. --cov-report=term-missing
 
 clean:
 	rm -rf $(VENV_DIR) .pytest_cache .coverage htmlcov
