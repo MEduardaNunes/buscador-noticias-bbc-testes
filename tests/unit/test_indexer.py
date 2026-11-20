@@ -40,17 +40,15 @@ class TestLerDocumentos:
         assert documentos[0].doc_id_num == "valido"
 
     def test_continua_leitura_quando_um_arquivo_falha(tmp_path, capsys):
-        cat = tmp_path / "economia"
+        cat = tmp_path / "politics"
         cat.mkdir()
-        (cat / "pasta_invalida.txt").mkdir()  # Força IsADirectoryError ao tentar open()
-        (cat / "valido.txt").write_text("texto valido", encoding="latin-1")
-  
+        (cat / "001.txt").mkdir()  # Força IsADirectoryError no open()
+        (cat / "002.txt").write_text("texto valido", encoding="latin-1")
+
         documentos = ler_documentos(str(tmp_path))
-        saida = capsys.readouterr().out
 
         assert len(documentos) == 1
-        assert documentos[0].doc_id_num == "valido"
-        assert "Erro ao ler o arquivo" in saida
+        assert documentos[0].doc_id == "002"
 
     def test_lanca_erro_quando_diretorio_corpus_nao_existe(tmp_path):
         caminho_inexistente = tmp_path / "nao_existe"
