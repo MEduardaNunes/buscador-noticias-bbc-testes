@@ -28,16 +28,16 @@ class TestLerDocumentos:
         assert documentos == []
 
     def test_ignora_arquivos_que_nao_terminam_com_txt(self, tmp_path):
-        cat = tmp_path / "noticias"
+        cat = tmp_path / "tech"
         cat.mkdir()
-        (cat / "valido.txt").write_text("ok", encoding="latin-1")
-        (cat / "ignorado.csv").write_text("a,b", encoding="latin-1")
-        (cat / "maiusculo.TXT").write_text("nao lido", encoding="latin-1")
+        (cat / "001.txt").write_text("valido", encoding="latin-1")
+        (cat / "002.csv").write_text("ignorado", encoding="latin-1")
+        (cat / "003.TXT").write_text("ignorado", encoding="latin-1")
 
         documentos = ler_documentos(str(tmp_path))
 
         assert len(documentos) == 1
-        assert documentos[0].doc_id_num == "valido"
+        assert documentos[0].doc_id == "001"
 
     def test_continua_leitura_quando_um_arquivo_falha(self, tmp_path, capsys):
         cat = tmp_path / "politics"
