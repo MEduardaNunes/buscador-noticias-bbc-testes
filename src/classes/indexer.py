@@ -305,3 +305,14 @@ class Corpus:
         except Exception as e:
             print(f"Erro ao carregar dados de 'indice_trie_estatisticas.dat': {e}")
             return False
+                
+    def _formatar_estatisticas(self):
+        """Converte o dicionário de estatísticas em uma lista de strings para salvar."""
+        linhas_formatadas = []
+        
+        for termo, estatisticas in self.estatisticas_corpus.items():
+            termo_seguro = self._aplicar_escape(termo)
+            media = estatisticas['media']
+            desvio = estatisticas['desvio_padrao']
+            linhas_formatadas.append(f"{termo_seguro}:{media},{desvio}\n")
+        return linhas_formatadas
