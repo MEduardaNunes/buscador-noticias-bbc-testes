@@ -143,3 +143,19 @@ class Corpus:
                 desvio_padrao = 0
                 
             self.estatisticas_corpus[termo] = {"media": media, "desvio_padrao": desvio_padrao}
+                
+    def _aplicar_escape(self, valor):
+        """Escapa os delimitadores usados no formato do arquivo."""
+        if valor is None:
+            return ""
+    
+        valor = str(valor)
+        valor = valor.replace('\\', '\\\\')
+        valor = valor.replace(':', '\\:')
+        valor = valor.replace(',', '\\,')
+        valor = valor.replace('(', '\\(')
+        valor = valor.replace(')', '\\)')
+            
+        valor = valor.replace("'", "\\'") 
+            
+        return valor
