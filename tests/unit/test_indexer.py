@@ -42,7 +42,7 @@ class TestLerDocumentos:
     def test_continua_leitura_quando_um_arquivo_falha(self, tmp_path, capsys):
         cat = tmp_path / "politics"
         cat.mkdir()
-        (cat / "001.txt").mkdir()  # Força IsADirectoryError no open()
+        (cat / "001.txt").mkdir() 
         (cat / "002.txt").write_text("texto valido", encoding="latin-1")
 
         documentos = ler_documentos(str(tmp_path))
