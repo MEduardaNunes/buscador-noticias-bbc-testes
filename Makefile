@@ -24,8 +24,15 @@ test-unit: venv
 
 test-integration: venv
 	$(PYTEST) tests/integration/
+
+test-e2e: venv
+	$(PYTHON) app.py & \
+	SERVER_PID=$$!; \
+	trap "kill $$SERVER_PID 2>/dev/null || true" EXIT; \
+	sleep 2; \
+	npx cypress open
 	
-test-all: test-unit test-integration
+test: test-unit test-integration
 
 coverage: venv
 	$(PYTEST) tests/ --cov=. --cov-report=term-missing
