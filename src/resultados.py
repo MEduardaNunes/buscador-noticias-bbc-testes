@@ -56,3 +56,47 @@ class GerenciadorResultados:
         except Exception as e:
             print(f"[Erro GerenciadorResultados] Falha ao gerar snippet para {item.doc_id}: {e}")
             return "[Falha na geração do snippet]"
+
+     def obter_pagina_formatada(self, num_pagina=1, tamanho_pagina=10):
+        """
+        Retorna uma lista de dicionários formatados para a página especificada,
+        incluindo o snippet gerado. Garante que os resultados estejam ordenados.
+        
+        Parâmetros:
+            num_pagina (int): Número da página a ser retornada (padrão é 1).
+            tamanho_pagina (int): Quantidade de resultados por página (padrão é 10).
+
+        Retorno:
+            List[Dict[str, str]]: Lista de dicionários contendo os resultados da página com as informações
+            formatadas, incluindo o snippet.
+        """
+        if self._resultados_ordenados is None:
+            self.ordenar()
+        
+        # Calcula os índices para a paginação
+        inicio = (num_pagina - 1) * tamanho_pagina
+        fim = inicio + tamanho_pagina
+        
+        resultados_pagina = self._resultados_ordenados[inicio:fim]
+        resultados_finais = []
+        
+        for item in resultados_pagina:
+            snippet = "[Snippet não gerado]"
+            
+            snippet = self.gerar_snippet(item)
+                
+            # Formata o id do doc de (int, int) para string
+            categoria_int, numero_int = item.doc_id
+            categoria_nome = self._mapa_categorias.get(categoria_int, 'desconhecida')
+            doc_num_str = f"{numero_int:03d}"
+            doc_id_completo_str = f"{categoria_nome}/{doc_num_str}"
+
+            resultados_finais.append({
+                'id_completo': doc_id_completo_str,
+                'categoria': categoria_nome,
+                'id_num': doc_num_str,
+                'score': f"{item.relevancia:.4f}",
+                'snippet': snippet
+            })
+        
+        return resultados_finais
