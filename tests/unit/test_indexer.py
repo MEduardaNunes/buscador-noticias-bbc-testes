@@ -74,3 +74,12 @@ class TestConstruirIndice:
         assert corpus.estatisticas_corpus["trade"]["desvio_padrao"] == pytest.approx(math.sqrt(2))
         assert corpus.estatisticas_corpus["market"]["media"] == pytest.approx(1.0)
         assert corpus.estatisticas_corpus["market"]["desvio_padrao"] == pytest.approx(0.0)
+
+    def test_define_desvio_padrao_zero_quando_ha_apenas_um_documento(self, tmp_path):
+        (tmp_path / "tech").mkdir()
+        (tmp_path / "tech" / "010.txt").write_text("python python", encoding="latin-1")
+        corpus = Corpus()
+
+        corpus.construir_indice(str(tmp_path))
+
+        assert corpus.estatisticas_corpus["python"] == {"media": 2.0, "desvio_padrao": 0}
