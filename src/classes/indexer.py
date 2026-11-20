@@ -33,3 +33,47 @@ class Corpus:
             self.trie = TrieCompacta()
             self.estatisticas_corpus = {}  # Formato: {"termo": {"media": x, "desvio_padrao": y}}  
             self.todos_documentos = set()
+
+    def _processar_documentos(self, documentos):
+        """
+        Processa uma lista de documentos, preenchendo a Trie e o set 'todos_documentos'.
+        Retorna os dicionários de frequência necessários para as estatísticas.
+        """
+        # Dicionário temporário para calcular frequências
+        frequencias_por_doc = {} # Formato: {'business/001': {'trade': 5, 'market': 3}, ...}
+                
+        for doc in documentos:
+            doc_id_completo = f"{doc.categoria}/{doc.doc_id}" # Cria um id único para cada doc (ex: 'business/001')
+            frequencias_por_doc[doc_id_completo] = {}
+            
+            # Converte os identificadores do doc para inteiros
+            categoria_int = Categoria[doc.categoria].value
+            numero_int = int(doc.doc_id) 
+            doc_id_tupla = (categoria_int, numero_int)
+            self.todos_documentos.add(doc_id_tupla)
+
+            # Normalização do texto
+            termos_com_posicao = processar_texto(doc.conteudo)
+            
+            for termo, indice_char in termos_com_posicao:
+                
+                # Pula pontuações repetidas (ex: "!!", "...")
+                if re.fullmatch(r"([.,!?;:])\1+", termo):
+                    continue 
+                else:
+                    # Remove pontuação do início ou fim do termo
+                    termo = re.sub(r"^[,.!?;:]+|[,.!?;:]+$", "", termo)
+                    
+                if not termo: # Pula o termo se ele ficou vazio (ex: era só um ".")
+                    continue
+                
+                # Preenche o dicionário de frequências do doc atual
+                frequencias_por_doc[doc_id_completo][termo] = frequencias_por_doc[doc_id_completo].get(termo, 0) + 1
+                
+                # Insere o termo, o id do documento e a primeira posição de ocorrência do termo na trie compacta
+                self.trie.insere_palavra(termo, doc_id_tupla, indice_char)
+        
+        # Cria o set de todos os termos únicos encontrados
+        todos_os_termos = set(termo for freqs in frequencias_por_doc.values() for termo in freqs)
+        
+        return frequencias_por_doc, todos_os_termos
