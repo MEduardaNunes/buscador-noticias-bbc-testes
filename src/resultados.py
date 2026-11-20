@@ -31,3 +31,13 @@ class GerenciadorResultados:
     def obter_relevancia(self, item):
         """Função para obter a relevância de um ResultadoItem."""
         return item.relevancia
+
+    def ordenar(self):
+        """
+        Ordena os resultados por relevância (decrescente) usando mergesort.
+        
+        Retorno: None
+        """
+        if self._resultados_ordenados is None:
+            self._resultados_ordenados = mergesort(self._resultados, self.obter_relevancia)
+            
