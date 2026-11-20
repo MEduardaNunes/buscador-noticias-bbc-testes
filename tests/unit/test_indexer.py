@@ -1,5 +1,6 @@
-from src.classes.indexer import ler_documentos
+from src.classes.indexer import ler_documentos, Corpus, Categoria
 import pytest
+import math
 
 class TestLerDocumentos:
     def test_carrega_arquivos_txt_em_multiplas_categorias_com_latin1(self, tmp_path):
