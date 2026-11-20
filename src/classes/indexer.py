@@ -105,4 +105,19 @@ class Corpus:
         
         # Calcula média e desvio padrão para cada termo
         self._calcular_estatisticas(total_docs, lista_de_frequencias_por_termo)
-
+            
+    def _construir_lista_frequencias(self, todos_os_termos, frequencias_por_doc):
+        """
+        Converte o dicionário 'frequencias_por_doc' em um dicionário 
+        de 'termo -> [lista de frequências]', necessário para o cálculo estatístico.
+        """
+        lista_de_frequencias_por_termo = {}
+        
+        for termo in todos_os_termos:
+            lista_de_frequencias_por_termo[termo] = []
+            # Para cada documento, pega a frequência daquele termo
+            for doc_id in frequencias_por_doc:
+                freq = frequencias_por_doc[doc_id].get(termo, 0)
+                lista_de_frequencias_por_termo[termo].append(freq)
+                
+        return lista_de_frequencias_por_termo
