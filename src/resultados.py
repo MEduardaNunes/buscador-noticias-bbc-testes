@@ -40,4 +40,19 @@ class GerenciadorResultados:
         """
         if self._resultados_ordenados is None:
             self._resultados_ordenados = mergesort(self._resultados, self.obter_relevancia)
-            
+
+     def gerar_snippet(self, item):
+        """Tenta gerar o snippet e retorna uma mensagem em caso de falha"""
+        try:
+            snippet = _gerar_snippet_formatado(
+                item.doc_id, 
+                item.query_termo, 
+                item.caractere_inicial, 
+                self._caminho_corpus, 
+                self._mapa_categorias,
+                self._todos_os_termos
+            )
+            return snippet
+        except Exception as e:
+            print(f"[Erro GerenciadorResultados] Falha ao gerar snippet para {item.doc_id}: {e}")
+            return "[Falha na geração do snippet]"
