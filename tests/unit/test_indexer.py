@@ -41,3 +41,17 @@ def test_ler_documentos_ignora_arquivos_que_nao_terminam_com_txt(tmp_path):
     assert len(documentos) == 1
     assert documentos[0].doc_id_num == "valido"
 
+def test_ler_documentos_continua_leitura_quando_um_arquivo_falha(tmp_path, capsys):
+    cat = tmp_path / "economia"
+    cat.mkdir()
+    (cat / "pasta_invalida.txt").mkdir()  # Força IsADirectoryError ao tentar open()
+    (cat / "valido.txt").write_text("texto valido", encoding="latin-1")
+
+    documentos = ler_documentos(str(tmp_path))
+    saida = capsys.readouterr().out
+
+    assert len(documentos) == 1
+    assert documentos[0].doc_id_num == "valido"
+    assert "Erro ao ler o arquivo" in saida
+
+
