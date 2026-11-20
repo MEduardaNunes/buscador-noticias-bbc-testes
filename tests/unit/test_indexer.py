@@ -54,4 +54,8 @@ def test_ler_documentos_continua_leitura_quando_um_arquivo_falha(tmp_path, capsy
     assert documentos[0].doc_id_num == "valido"
     assert "Erro ao ler o arquivo" in saida
 
+def test_ler_documentos_lanca_erro_quando_diretorio_corpus_nao_existe(tmp_path):
+    caminho_inexistente = tmp_path / "nao_existe"
 
+    with pytest.raises(FileNotFoundError):
+        ler_documentos(str(caminho_inexistente))
