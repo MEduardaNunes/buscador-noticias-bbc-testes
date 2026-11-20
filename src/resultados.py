@@ -27,3 +27,7 @@ class GerenciadorResultados:
         
         item = ResultadoItem(doc_id, relevancia, query_termo, caractere_inicial)
         self._resultados.append(item)
+        
+    def obter_relevancia(self, item):
+        """Função para obter a relevância de um ResultadoItem."""
+        return item.relevancia
