@@ -159,3 +159,14 @@ class Corpus:
         valor = valor.replace("'", "\\'") 
             
         return valor
+
+    def _remover_escape(self, valor_escapado):
+        """Reverte o escalonamento dos delimitadores."""
+        valor = valor_escapado.replace('\\:', ':')
+        valor = valor.replace('\\,', ',')
+        valor = valor.replace('\\(', '(')
+        valor = valor.replace('\\)', ')')
+        valor = valor.replace("\\'", "'")      
+        valor = valor.replace('\\\\', '\\')
+            
+        return valor
