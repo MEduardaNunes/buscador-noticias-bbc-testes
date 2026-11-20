@@ -211,3 +211,40 @@ class Corpus:
             lista_invertida_dict[chave] = dados
             
         return valor, lista_invertida_dict
+            
+    def _carregar_estatisticas(self, linhas, indice_estatisticas, indice_trie):
+        """Processa as linhas de estatísticas e preenche self.estatisticas_corpus."""
+        
+        for i in range(indice_estatisticas + 1, indice_trie):
+                    linha = linhas[i].strip()
+                    if not linha: continue
+                    
+                    # Divide no primeiro ':' que não esteja escapado 
+                    partes = re.split(r'(?<!\\):', linha, maxsplit=1)
+                    
+                    if len(partes) == 2:
+                        termo_seguro, estatisticas_str = partes
+                        try:
+                            termo = self._remover_escape(termo_seguro) 
+                            valores_estatisticas = estatisticas_str.split(',')
+                            
+                            if len(valores_estatisticas) == 2:
+                                media_str, desvio_str = valores_estatisticas
+                                try:
+                                    media = float(media_str)
+                                    desvio = float(desvio_str)
+                                    self.estatisticas_corpus[termo] = {
+                                        "media": media,
+                                        "desvio_padrao": desvio
+                                    }
+                                except ValueError as e_float:
+                                    print(f"[ERRO CONVERSÃO] Termo '{termo}': Não foi possível converter '{media_str}' ou '{desvio_str}' para float. Linha: {linha}. Erro: {e_float}")
+                            else:
+                                print(f"[ERRO FORMATO ESTATISTICAS] Termo '{termo}': Falta vírgula ou formato incorreto. Linha: {linha}")
+                        except re.error as e_escape:
+                            print(f"[ERRO ESCAPE] Falha ao processar termo escapado na linha {i+1}: '{linha}'. Erro: {e_escape}")
+                        except Exception as e_geral:
+                            print(f"[ERRO INESPERADO ESTATISTICAS] Linha {i+1}: '{linha}'. Erro: {e_geral}")
+                    else:
+                        print(f"[ERRO FORMATO LINHA] Linha {i+1}: Não foi possível separar termo e estatísticas (falta ':'?). Conteúdo: '{linha}'")
+
