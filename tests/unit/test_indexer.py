@@ -18,4 +18,8 @@ def test_ler_documentos_carrega_arquivos_txt_em_multiplas_categorias_com_latin1(
         ("politica", "002", "Eleição municipal"),
     }
 
+def test_ler_documentos_retorna_lista_vazia_quando_corpus_esta_vazio(tmp_path):
+    documentos = ler_documentos(str(tmp_path))
+
+    assert documentos == []
 
