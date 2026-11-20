@@ -334,3 +334,21 @@ class Corpus:
             print("Dados salvos com sucesso.")
         except IOError as e:
             print(f"Erro ao salvar o índice: {e}")
+                
+    def _formatar_lista_invertida(self, lista_invertida):
+        """Converte o dicionário da lista invertida para uma string"""
+        if not lista_invertida:
+            return "{}"
+
+        partes = []
+        for chave, dados in lista_invertida.items():
+            cat, num = chave
+            freq = dados["frequencia"]
+            pos = dados["primeira_posicao"]
+            
+            # Constrói a string para um item do dicionário em um formato definido
+            parte_str = f"({cat}, {num}):{{'frequencia':{freq}, 'primeira_posicao':{pos}}}"
+            partes.append(parte_str)
+        
+        conteudo_interno = ", ".join(partes)
+        return f"{{{conteudo_interno}}}"
