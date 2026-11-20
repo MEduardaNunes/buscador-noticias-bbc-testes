@@ -51,7 +51,7 @@ class TestLerDocumentos:
         assert documentos[0].doc_id == "002"
 
     def test_lanca_erro_quando_diretorio_corpus_nao_existe(self, tmp_path):
-        caminho_inexistente = tmp_path / "nao_existe"
+        caminho_inexistente = tmp_path / "inexistente"
 
         with pytest.raises(FileNotFoundError):
             ler_documentos(str(caminho_inexistente))
