@@ -170,3 +170,44 @@ class Corpus:
         valor = valor.replace('\\\\', '\\')
             
         return valor
+
+    def parse_linha_trie(self, linha):
+        """
+        Parse de uma linha do arquivo de índice da trie
+
+        Parâmetros:
+            linha (str): a string da linha a ser analisada. Ex: "('ad',{(1, 23):...})"
+
+        Retorno:
+            Uma tupla (valor, lista_invertida_dict) com os dados extraídos.
+        """
+        linha = linha.strip()
+        
+        # Regex para capturar o valor (str) entre as primeiras aspas simples. Ex: "('valor capturado', ...)"
+        match = re.match(r"^\('((?:\\.|[^'])*?)',({.*})\)$", linha)
+        
+        if not match:
+            if linha == "('',{})" or linha == "(,'{}')": 
+                return "", {}
+            raise ValueError(f"Formato de linha inválido, não correspondeu ao padrão: {linha}")
+        
+        valor_escapado = match.group(1)   # Ex: "it\'s"
+        lista_str = match.group(2)    # Ex: "{(1, 23):{...}}"
+            
+        valor = self._remover_escape(valor_escapado)
+        
+        lista_invertida_dict = {}
+        
+        # Encontra todas as ocorrências de "(cat, num): {'freq': f, 'pos': p}"
+        padrao_ocorrencia = re.compile(r"\((\d+),\s*(\d+)\):\s*\{'frequencia':\s*(\d+),\s*'primeira_posicao':\s*(\d+)\}")
+        
+        # Encontra todas as correspondências na string
+        for match_dict in padrao_ocorrencia.finditer(lista_str):
+            cat_str, num_str, freq_str, pos_str = match_dict.groups()
+            
+            # Converte as strings capturadas para inteiros
+            chave = (int(cat_str), int(num_str))
+            dados = {"frequencia": int(freq_str), "primeira_posicao": int(pos_str)}
+            lista_invertida_dict[chave] = dados
+            
+        return valor, lista_invertida_dict
