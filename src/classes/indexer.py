@@ -316,3 +316,21 @@ class Corpus:
             desvio = estatisticas['desvio_padrao']
             linhas_formatadas.append(f"{termo_seguro}:{media},{desvio}\n")
         return linhas_formatadas
+            
+    def salvar_em_disco(self, caminho_arquivo):
+        """Salva o índice (trie e estatísticas) em um arquivo de texto"""
+        print(f"Salvando dados em '{caminho_arquivo}'...")
+        try:
+            with open(caminho_arquivo, 'w', encoding='utf-8') as f:
+                f.write("---ESTATISTICAS---\n")
+                
+                linhas_estatisticas = self._formatar_estatisticas()
+                    
+                f.writelines(linhas_estatisticas)
+
+                f.write("---TRIE---\n")
+                self._salvar_no_recursivo(f, self.trie.raiz, 0)
+            
+            print("Dados salvos com sucesso.")
+        except IOError as e:
+            print(f"Erro ao salvar o índice: {e}")
