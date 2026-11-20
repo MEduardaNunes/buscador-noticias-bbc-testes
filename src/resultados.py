@@ -18,3 +18,12 @@ class GerenciadorResultados:
         self._caminho_corpus = caminho_corpus
         self._mapa_categorias = mapa_categorias
         self._todos_os_termos = todos_os_termos
+
+    def adicionar_resultado(self, doc_id, relevancia, query_termo, caractere_inicial):
+        """Adiciona um resultado"""
+        if relevancia is None or doc_id is None:
+            print(f"[Aviso GerenciadorResultados] Tentativa de adicionar resultado inválido: {doc_id}, {relevancia}")
+            return
+        
+        item = ResultadoItem(doc_id, relevancia, query_termo, caractere_inicial)
+        self._resultados.append(item)
