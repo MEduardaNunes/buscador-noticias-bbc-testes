@@ -44,6 +44,7 @@ describe('Fluxo de conta', () => {
             url: '/logout',
             failOnStatusCode: false,
         });
+        cy.visit('/');
     });
 
     afterEach(() => {
@@ -110,5 +111,15 @@ describe('Fluxo de conta', () => {
 
         cy.contains('Perfil atualizado com sucesso.').should('be.visible');
         contasCriadas.push({ usuario: novoUsuario, senha: novaSenha });
+    });
+
+    it('CT04: deslogar da conta', () => {
+        criarConta();
+        logar();
+
+        cy.visit('/');
+        cy.get('#logout').click();
+
+        cy.contains('Logar').should('be.visible');
     });
 });
