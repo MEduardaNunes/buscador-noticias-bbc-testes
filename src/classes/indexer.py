@@ -352,3 +352,20 @@ class Corpus:
         
         conteudo_interno = ", ".join(partes)
         return f"{{{conteudo_interno}}}"
+
+    def _salvar_no_recursivo(self, arquivo, no, profundidade):
+        """Método auxiliar recursivo para salvar os nós da trie usando indentação para representar a estrutura da árvore."""
+        indentacao = "  " * profundidade
+        
+        lista_invertida_str = self._formatar_lista_invertida(no.lista_invertida)
+        
+        valor_seguro = self._aplicar_escape(no.valor)
+        
+        # faz com que o valor do nó seja escrito com aspas (ex: 'ad')
+        valor_str = f"'{valor_seguro}'"
+        
+        arquivo.write(f"{indentacao}({valor_str},{lista_invertida_str})\n")
+        
+        for filho in no.filhos:
+            self._salvar_no_recursivo(arquivo, filho, profundidade + 1)         
+    
