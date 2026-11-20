@@ -280,3 +280,28 @@ class Corpus:
             except Exception as e_geral:
                 print(f"[ERRO FATAL CARREGAR TRIE] Linha {i+1}: {e_geral}")
                 print(f"   -> Conteúdo da linha: {linha.strip()}")
+                    
+    def carregar_de_disco(self, caminho_arquivo):
+        """
+        Carrega o índice (trie e estatísticas) de um arquivo de texto
+        """
+        print(f"Carregando dados de '{caminho_arquivo}'...")
+        try:
+            with open(caminho_arquivo, 'r', encoding='utf-8') as f:
+                linhas = f.readlines()
+                
+                # Encontra os separadores de bloco
+                indice_estatisticas = linhas.index("---ESTATISTICAS---\n")
+                indice_trie = linhas.index("---TRIE---\n")
+                    
+                self._carregar_estatisticas(linhas, indice_estatisticas, indice_trie)
+                self._carregar_trie(linhas, indice_trie)
+                
+            print("Dados carregados com sucesso.")
+            return True
+        except FileNotFoundError:
+            print("Arquivo de 'indice_trie_estatisticas.dat' não encontrado. Um novo será criado.")
+            return False
+        except Exception as e:
+            print(f"Erro ao carregar dados de 'indice_trie_estatisticas.dat': {e}")
+            return False
