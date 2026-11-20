@@ -77,3 +77,32 @@ class Corpus:
         todos_os_termos = set(termo for freqs in frequencias_por_doc.values() for termo in freqs)
         
         return frequencias_por_doc, todos_os_termos
+            
+    def construir_indice(self, caminho_corpus):
+        """
+        Método responsável por fazer o processo de indexação.
+        
+        Parâmetros:
+            caminho_corpus (str): O caminho para o diretório raiz do corpus de documentos
+        """
+        self.todos_documentos.clear()
+        
+        documentos = ler_documentos(caminho_corpus)
+        total_docs = len(documentos)
+        
+        if total_docs == 0:
+            print("[CONSTRUIR_INDICE] A lista de documentos está vazia. A indexação não pode continuar.")
+            return
+        
+        # Formato frequencias_por_doc: {'business/001': {'trade': 5, 'market': 3}, ...}
+        # Formato lista_de_frequencias_por_termo: {'trade': [5, 0, 2, ...], 'market': [3, 1, 0, ...]}
+        
+        # Processa os documentos, preenche a Trie e calcula as frequências
+        frequencias_por_doc, todos_os_termos = self._processar_documentos(documentos)
+        
+        # Transforma os dados para uma lista de freqs por termo
+        lista_de_frequencias_por_termo = self._construir_lista_frequencias(todos_os_termos, frequencias_por_doc)
+        
+        # Calcula média e desvio padrão para cada termo
+        self._calcular_estatisticas(total_docs, lista_de_frequencias_por_termo)
+
