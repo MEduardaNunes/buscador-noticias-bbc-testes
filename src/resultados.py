@@ -9,3 +9,12 @@ ResultadoItem = namedtuple('ResultadoItem', [
     'query_termo', # str (o termo da query a ser destacado)
     'caractere_inicial' # int (índice do caractere inicial do query_termo)
 ])
+
+class GerenciadorResultados:
+    """Armazena os resultados de uma busca, ordena-os por relevância e fornece snippets formatados"""
+    def __init__(self, caminho_corpus, mapa_categorias, todos_os_termos: list):
+        self._resultados= [] # Lista de ResultadoItem
+        self._resultados_ordenados = None # Lista de resultados ordenados
+        self._caminho_corpus = caminho_corpus
+        self._mapa_categorias = mapa_categorias
+        self._todos_os_termos = todos_os_termos
