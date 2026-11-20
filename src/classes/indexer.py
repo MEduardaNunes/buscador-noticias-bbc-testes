@@ -248,3 +248,35 @@ class Corpus:
                     else:
                         print(f"[ERRO FORMATO LINHA] Linha {i+1}: Não foi possível separar termo e estatísticas (falta ':'?). Conteúdo: '{linha}'")
 
+    def _carregar_trie(self, linhas, indice_trie):
+        """Processa as linhas da trie e reconstrói self.trie."""
+        self.trie = TrieCompacta()
+        pilha_de_pais = [self.trie.raiz] # Pilha para reconstruir a árvore
+                
+        for i in range(indice_trie + 2, len(linhas)):
+            linha = linhas[i]
+            if not linha.strip(): continue
+            
+            # Calcula a profundidade do nó na árvore pela indentação (a cada 2 espaços = 1 nível de profundidade)
+            profundidade_atual = (len(linha) - len(linha.lstrip(' '))) // 2
+            try:
+                valor, lista_invertida_dict = self.parse_linha_trie(linha)
+
+                novo_no = NoTrie(valor)
+                novo_no.lista_invertida = lista_invertida_dict
+
+                while len(pilha_de_pais) > profundidade_atual:
+                    pilha_de_pais.pop()
+                        
+                pai_no = pilha_de_pais[-1]
+                pai_no.insere_filho(novo_no)
+                        
+                pilha_de_pais.append(novo_no)
+            
+            except ValueError as e_parse:
+                # Se o parse_linha_trie falhar, este print nos dirá qual linha
+                print(f"[ERRO PARSE TRIE] Linha {i+1} mal formatada, pulando nó. Erro: {e_parse}", flush=True)
+                print(f"   -> Conteúdo da linha: {linha.strip()}", flush=True)
+            except Exception as e_geral:
+                print(f"[ERRO FATAL CARREGAR TRIE] Linha {i+1}: {e_geral}")
+                print(f"   -> Conteúdo da linha: {linha.strip()}")
