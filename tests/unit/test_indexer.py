@@ -22,7 +22,7 @@ class TestLerDocumentos:
         assert documentos == []
 
     def test_ignora_arquivos_soltos_na_raiz_do_corpus(self, tmp_path):
-        (tmp_path / "ignorado.txt").write_text("conteudo", encoding="latin-1")
+        (tmp_path / "001.txt").write_text("ignorado", encoding="latin-1")
 
         documentos = ler_documentos(str(self, tmp_path))
         assert documentos == []
