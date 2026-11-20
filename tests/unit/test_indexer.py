@@ -23,3 +23,9 @@ def test_ler_documentos_retorna_lista_vazia_quando_corpus_esta_vazio(tmp_path):
 
     assert documentos == []
 
+def test_ler_documentos_ignora_arquivos_soltos_na_raiz_do_corpus(tmp_path):
+    (tmp_path / "ignorado.txt").write_text("conteudo", encoding="latin-1")
+
+    documentos = ler_documentos(str(tmp_path))
+    assert documentos == []
+
