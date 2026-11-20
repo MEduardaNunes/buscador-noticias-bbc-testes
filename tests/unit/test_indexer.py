@@ -29,3 +29,15 @@ def test_ler_documentos_ignora_arquivos_soltos_na_raiz_do_corpus(tmp_path):
     documentos = ler_documentos(str(tmp_path))
     assert documentos == []
 
+def test_ler_documentos_ignora_arquivos_que_nao_terminam_com_txt(tmp_path):
+    cat = tmp_path / "noticias"
+    cat.mkdir()
+    (cat / "valido.txt").write_text("ok", encoding="latin-1")
+    (cat / "ignorado.csv").write_text("a,b", encoding="latin-1")
+    (cat / "maiusculo.TXT").write_text("nao lido", encoding="latin-1")
+
+    documentos = ler_documentos(str(tmp_path))
+
+    assert len(documentos) == 1
+    assert documentos[0].doc_id_num == "valido"
+
