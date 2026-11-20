@@ -121,3 +121,25 @@ class Corpus:
                 lista_de_frequencias_por_termo[termo].append(freq)
                 
         return lista_de_frequencias_por_termo
+
+    def _calcular_estatisticas(self, total_docs, lista_de_frequencias_por_termo):
+        """Calcula estatísticas de frequência (média, desvio padrão) para cada termo"""
+        
+        for termo, freqs in lista_de_frequencias_por_termo.items():
+            soma_freq = sum(freqs)
+            media = soma_freq / total_docs
+            
+            if total_docs > 1:
+                variancia = 0
+                soma_das_diferencas_quadradas = 0 
+                
+                for freq in freqs:
+                    soma_das_diferencas_quadradas += (freq - media) ** 2
+                
+                variancia = soma_das_diferencas_quadradas / (total_docs - 1)
+                desvio_padrao = math.sqrt(variancia)
+            else:
+                # Evita divisão por zero se houver apenas 1 documento
+                desvio_padrao = 0
+                
+            self.estatisticas_corpus[termo] = {"media": media, "desvio_padrao": desvio_padrao}
