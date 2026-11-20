@@ -27,3 +27,9 @@ def ler_documentos(caminho_corpus):
         
         return documentos
 
+class Corpus:
+    def __init__(self):
+            """Inicializa um objeto com uma trie vazia e um dicionário de estatísticas vazio"""
+            self.trie = TrieCompacta()
+            self.estatisticas_corpus = {}  # Formato: {"termo": {"media": x, "desvio_padrao": y}}  
+            self.todos_documentos = set()
