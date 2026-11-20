@@ -1,10 +1,10 @@
-from src.classes.trie_compacta import No, prefixo_comum, TrieCompacta
+from src.classes.trie_compacta import NoTrie, prefixo_comum, TrieCompacta
 import pytest
 
 
 def test_inserir_filho_correto():
-    no_pai = No("pai")
-    no_filho = No("filho")
+    no_pai = NoTrie("pai")
+    no_filho = NoTrie("filho")
 
     no_pai.insere_filho(no_filho)
 
@@ -12,7 +12,7 @@ def test_inserir_filho_correto():
 
 
 def test_falha_ao_inserir_filho_incorreto():
-    no_pai = No("pai")
+    no_pai = NoTrie("pai")
     filho_str = "oi"
     filho_int = 2
     filho_bool = True
@@ -28,7 +28,7 @@ def test_falha_ao_inserir_filho_incorreto():
 
 
 def test_insere_documento_com_chave_e_posicao_corretas():
-    no = No("base")
+    no = NoTrie("base")
     chave = (1, 1)
 
     no.insere_documento(chave = chave, posicao_no_doc = 2)
@@ -43,7 +43,7 @@ def test_insere_documento_com_chave_e_posicao_corretas():
 
 
 def test_falha_ao_inserir_documento_chave_incorreta():
-    no = No("base")
+    no = NoTrie("base")
     chave_tamanho_errado = (1)
     chave_tipos_incorretos = (1.0, "teste")
     chave_valores_incorretos = (-1, -3)
@@ -59,7 +59,7 @@ def test_falha_ao_inserir_documento_chave_incorreta():
 
 
 def test_falha_ao_inserir_documento_posicao_incorreta():
-    no = No("base")
+    no = NoTrie("base")
     chave_valida = (1, 2)
     posicao_tipo_incorreto = 12.5
     posicao_valor_invalido = -1
@@ -78,7 +78,7 @@ def test_falha_ao_inserir_documento_posicao_incorreta():
 
 
 def test_no_inicializa_raiz_sem_filhos_e_documentos():
-    no = No("valor")
+    no = NoTrie("valor")
 
     assert no.valor == "valor"
     assert no.filhos == []
@@ -86,9 +86,9 @@ def test_no_inicializa_raiz_sem_filhos_e_documentos():
 
 
 def test_insere_filho_mantem_ordem():
-    no_pai = No("pai")
-    primeiro = No("primeiro")
-    segundo = No("segundo")
+    no_pai = NoTrie("pai")
+    primeiro = NoTrie("primeiro")
+    segundo = NoTrie("segundo")
 
     no_pai.insere_filho(primeiro)
     no_pai.insere_filho(segundo)
@@ -97,7 +97,7 @@ def test_insere_filho_mantem_ordem():
 
 
 def test_insere_documento_na_posicao_zero():
-    no = No("base")
+    no = NoTrie("base")
 
     no.insere_documento(chave=(0, 0), posicao_no_doc=0)
 
@@ -108,7 +108,7 @@ def test_insere_documento_na_posicao_zero():
 
 
 def test_insere_documento_em_documentos_distintos():
-    no = No("base")
+    no = NoTrie("base")
 
     no.insere_documento(chave=(1, 1), posicao_no_doc=2)
     no.insere_documento(chave=(2, 3), posicao_no_doc=7)

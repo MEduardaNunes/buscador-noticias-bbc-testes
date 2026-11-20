@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-class No:
+class NoTrie:
     """
     Representa um nó da Trie.
     
     Atributos:
         valor (str): string contida no nó
-        filhos (list[No]): Nós filhos desse nó.
+        filhos (list[NoTrieNo]): Nós filhos desse nó.
         documentos (dict[tuple[int, int], dict[str, int]]): dicionário 
             que mapeia uma chave (seção, número) que indica o documento e 
             associa à frequência de ocorrência de uma palavra no documento
@@ -18,15 +18,15 @@ class No:
         self.filhos = []
         self.documentos = {}
 
-    def insere_filho(self, filho : No):
+    def insere_filho(self, filho : NoTrie):
         """
         Insere um nó filho em ordem de leitura.
         
         Parâmetros:
-            filho (No): nó filho a ser inserido.
+            filho (NoTrie): nó filho a ser inserido.
         """
-        if not isinstance(filho, No):
-            raise TypeError(f"Esperado No, mas recebeu {type(filho).__name__}")
+        if not isinstance(filho, NoTrie):
+            raise TypeError(f"Esperado NoTrie, mas recebeu {type(filho).__name__}")
             
         self.filhos.append(filho)
 
@@ -89,11 +89,11 @@ class TrieCompacta:
     Representa uma Trie Compacta.
     
     Atributos:
-        raiz (No): nó raiz da árvore.
+        raiz (NoTrie): nó raiz da árvore.
     """
 
     def __init__(self):
-        self.raiz = No("")
+        self.raiz = NoTrie("")
 
     def insere_palavra(self, palavra : str, chave : tuple[int, int], posicao : int):
         """
@@ -140,7 +140,7 @@ class TrieCompacta:
                 resto_filho = filho.valor[len(prefixo):]
                 resto_palavra = palavra[len(prefixo):]
 
-                novo_filho = No(resto_filho)
+                novo_filho = NoTrie(resto_filho)
                 novo_filho.filhos = filho.filhos.copy()
                 novo_filho.documentos = filho.documentos.copy()
 
@@ -149,7 +149,7 @@ class TrieCompacta:
                 filho.documentos = {}
 
                 if resto_palavra:
-                    novo_filho_resto = No(resto_palavra)
+                    novo_filho_resto = NoTrie(resto_palavra)
                     novo_filho_resto.insere_documento(chave, posicao)
                     filho.insere_filho(novo_filho_resto)
 
@@ -159,7 +159,7 @@ class TrieCompacta:
                 return
 
         # Caso não tenha prefixo comum com nenhum filho, cria novo nó
-        novo_no = No(palavra)
+        novo_no = NoTrie(palavra)
         novo_no.insere_documento(chave, posicao)
         no.insere_filho(novo_no)
     
@@ -178,12 +178,12 @@ class TrieCompacta:
 
         return self.busca_no_recursivo(self.raiz, palavra)
     
-    def busca_no_recursivo(self, no : No, palavra : str):
+    def busca_no_recursivo(self, no : NoTrie, palavra : str):
         """
         Busca as ocorrências de uma palavra na Trie, caso tenha, recursivamente.
             
         Parâmetros:
-            no (No): o nó em que é buscada a palavra.
+            no (NoTrie): o nó em que é buscada a palavra.
             palavra (string): palavra a ser buscada na trie.
 
         Retorna:
