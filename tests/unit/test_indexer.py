@@ -161,3 +161,24 @@ class TestSalvarEmDisco:
         caminho_diretorio.mkdir()
 
         corpus.salvar_em_disco(str(caminho_diretorio)) # não deve lançar exceção 
+
+
+class TestCarregarDeDisco:
+     def test_restaura_estatisticas_e_trie_salvas_incluindo_termos_com_caracteres_especiais(self, tmp_path):
+        corpus_dir = tmp_path / "corpus"
+        (corpus_dir / "tech").mkdir(parents=True)
+        (corpus_dir / "tech" / "001.txt").write_text("it's c:d data", encoding="latin-1")
+        arquivo_indice = tmp_path / "indice.dat"
+
+        corpus_original = Corpus()
+        corpus_original.construir_indice(str(corpus_dir))
+        corpus_original.salvar_em_disco(str(arquivo_indice))
+
+        corpus_carregado = Corpus()
+        sucesso = corpus_carregado.carregar_de_disco(str(arquivo_indice))
+        
+        assert sucesso is True
+        assert corpus_carregado.estatisticas_corpus == corpus_original.estatisticas_corpus
+        assert corpus_carregado.trie.busca_palavra("it's") == {(Categoria.tech.value, 1): {"frequencia": 1, "primeira_posicao": 0}}
+        assert corpus_carregado.trie.busca_palavra("data") == {(Categoria.tech.value, 1): {"frequencia": 1, "primeira_posicao": 9}}
+
