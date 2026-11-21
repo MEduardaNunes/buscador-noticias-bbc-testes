@@ -2,6 +2,7 @@ import pytest
 
 import app
 
+from src.artigos_salvos import ServicoArtigosSalvos
 
 @pytest.fixture
 def cliente(tmp_path, monkeypatch):
@@ -214,3 +215,17 @@ def test_busca_rejeita_mensagem_vazia(cliente):
     resposta = cliente.post("/search", data={"mensagem": "   "})
 
     assert resposta.status_code == 400
+
+def test_obter_servico_artigos_salvos_retorna_padrao_quando_nao_configurado(cliente):
+    servico = app.obter_servico_artigos_salvos()
+
+    assert isinstance(servico, ServicoArtigosSalvos)
+
+
+def test_obter_servico_artigos_salvos_retorna_instancia_configurada(cliente, monkeypatch):
+    servico_customizado = object()
+    monkeypatch.setitem(app.app.config, "SERVICO_ARTIGOS_SALVOS", servico_customizado)
+
+    servico = app.obter_servico_artigos_salvos()
+
+    assert servico is servico_customizado
