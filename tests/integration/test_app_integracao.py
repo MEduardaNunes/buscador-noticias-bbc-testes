@@ -378,5 +378,25 @@ def test_historico_get_exibe_termos_salvos_na_sessao(cliente):
     assert "music" in html
     assert "economy" in html
 
+def test_historico_post_redireciona_para_busca_com_termo(cliente):
+    resposta = cliente.post(
+        "/historico",
+        data={"mensagem": "football"},
+        follow_redirects=False,
+    )
 
+    assert resposta.status_code == 302
+    assert resposta.location.endswith("/search?termo=football")
+
+def test_historico_post_sem_mensagem_retorna_400(cliente):
+    resposta = cliente.post("/historico", data={})
+
+    assert resposta.status_code == 400
+
+
+def test_ajuda_renderiza_pagina_com_sucesso(cliente):
+    resposta = cliente.get("/ajuda")
+
+    assert resposta.status_code == 200
+    assert len(resposta.get_data(as_text=True).strip()) > 0
 # -----------
