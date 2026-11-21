@@ -115,3 +115,25 @@ class TestServicoArtigosSalvos:
 
         assert len(artigos_ana) == 1
         assert artigos_ana[0]["id_completo"] == "tech/001"
+        
+    def test_artigo_esta_salvo_reflete_estado_atual(self):
+        repo = RepositorioArtigosSalvosFake()
+        servico = ServicoArtigosSalvos(repositorio=repo)
+        servico.salvar_artigo("ana", "entertainment", "007")
+
+        assert servico.artigo_esta_salvo("ana", "entertainment", "007") is True
+        assert servico.artigo_esta_salvo("ana", "entertainment", "008") is False
+
+    @pytest.mark.parametrize(
+        "usuario,categoria,doc_id,mensagem_esperada",
+        [
+            ("", "tech", "001", "Usuário é obrigatório."),
+            ("   ", "tech", "001", "Usuário é obrigatório."),
+            (None, "tech", "001", "Usuário é obrigatório."),
+            ("ana", "", "001", "Categoria inválida"),
+            ("ana", "ciencia", "001", "Categoria inválida"),
+            ("ana", "tech", "", "Identificador de documento inválido"),
+            ("ana", "tech", "abc", "Identificador de documento inválido"),
+            ("ana", "tech", "-1", "Identificador de documento inválido"),
+        ],
+    )
