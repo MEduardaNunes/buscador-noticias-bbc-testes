@@ -142,10 +142,19 @@ def historico():
 
     return render_template('historico.html', historico = session['historico'])
 
-@app.route('/ajuda', methods=['GET'])
+@app.route('/ajuda')
 def ajuda():
-    """Página de ajuda sobre operadores e consultas."""
-    return "Ajuda sobre consultas e operadores", 200
+    """Exibe a página de ajuda."""
+    return render_template('ajuda.html')
+
+if __name__ == '__main__':
+    inicializar_indice()
+     
+    if gerenciador_de_busca:    
+        app.run(debug=False) 
+    else:
+        print("ERRO: Gerenciador de busca não foi inicializado.")
+        print("O servidor Flask não será iniciado.")
 
 @app.route('/perfil', methods=['GET', 'POST'])
 def perfil():
