@@ -36,3 +36,16 @@ class TestProcessarTexto:
         resultado = processar_texto(texto)
 
         assert resultado == [("python", 0), ("312", 7), ("teste", 11)]
+
+    def test_calcula_indices_corretos_com_espacos_multiplos_e_quebras_de_linha(self):
+        texto = "  um\n\tdois   tres"
+
+        resultado = processar_texto(texto)
+
+        assert resultado == [("um", 2), ("dois", 6), ("tres", 13)]
+
+    @pytest.mark.parametrize("texto_vazio", ["", "   ", "\n\t  "])
+    def test_retorna_lista_vazia_para_texto_vazio_ou_apenas_espacos(self, texto_vazio):
+        resultado = processar_texto(texto_vazio)
+
+        assert resultado == []
