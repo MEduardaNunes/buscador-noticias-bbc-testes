@@ -93,3 +93,10 @@ class TestConstruirIndice:
         corpus.construir_indice(str(tmp_path))
 
         assert set(corpus.estatisticas_corpus.keys()) == {"cinema", "filme"}
+
+    def test_nao_indexa_nada_quando_corpus_esta_vazio(self, tmp_path):
+        corpus = Corpus()
+        corpus.construir_indice(str(tmp_path))
+
+        assert corpus.todos_documentos == set()
+        assert corpus.estatisticas_corpus == {}
