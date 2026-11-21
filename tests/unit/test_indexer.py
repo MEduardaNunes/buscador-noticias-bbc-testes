@@ -113,6 +113,25 @@ class TestConstruirIndice:
         assert corpus.todos_documentos == set()
         assert corpus.estatisticas_corpus == {}
 
+
+    def test_reconstruir_indice_substitui_dados_do_indice_anterior(self, tmp_path):
+        corpus1_dir = tmp_path / "corpus1"
+        (corpus1_dir / "business").mkdir(parents=True)
+        (corpus1_dir / "business" / "001.txt").write_text("antigo", encoding="latin-1")
+        
+        corpus2_dir = tmp_path / "corpus2"
+        (corpus2_dir / "sport").mkdir(parents=True)
+        (corpus2_dir / "sport" / "002.txt").write_text("novo", encoding="latin-1")
+        
+        corpus = Corpus()
+        corpus.construir_indice(str(corpus1_dir))
+        corpus.construir_indice(str(corpus2_dir))
+        
+        assert corpus.todos_documentos == {(Categoria.sport.value, 2)}
+        assert set(corpus.estatisticas_corpus.keys()) == {"novo"}
+        assert corpus.trie.busca_palavra("antigo") == {}
+        assert corpus.trie.busca_palavra("novo") == {(Categoria.sport.value, 2): {"frequencia": 1, "primeira_posicao": 0}}
+
 class TestParseLinhaTrie:
     def test_extrai_valor_e_multiplas_ocorrencias_de_linha_valida(self):
         corpus = Corpus()
