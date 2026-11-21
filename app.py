@@ -4,6 +4,7 @@ import sqlite3
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from src.artigos_salvos import RepositorioArtigosSalvosSQLite, ServicoArtigosSalvos
+from src.models import Categoria
 
 load_dotenv()
 app = Flask(__name__)
@@ -34,6 +35,8 @@ def inicializar_banco():
             )
             """
         )
+    RepositorioArtigosSalvosSQLite(get_db).inicializar_tabela()
+
 
 def obter_servico_artigos_salvos() -> ServicoArtigosSalvos:
     servico_configurado = app.config.get('SERVICO_ARTIGOS_SALVOS')
@@ -42,9 +45,6 @@ def obter_servico_artigos_salvos() -> ServicoArtigosSalvos:
 
     repositorio = RepositorioArtigosSalvosSQLite(get_db)
     return ServicoArtigosSalvos(repositorio)
-
-
-RepositorioArtigosSalvosSQLite(get_db).inicializar_tabela()
 
 inicializar_banco()
 
@@ -289,6 +289,48 @@ def remover_artigo():
         abort(400, description=str(erro))
 
     return redirect(proximo)
+    
+@app.route('/documento/<categoria>/<id_documento>', methods=['GET'])
+def exibir_documento(categoria, id_documento):
+    """Exibe o conteúdo de um documento específico."""
+    global caminho_corpus
+
+    # Verifica se a categoria é válida
+    categorias_validas = [c.name for c in Categoria]
+    if categoria not in categorias_validas:
+        print(f"ERRO: Categoria inválida '{categoria}'")
+        abort(404, "Documento não encontrado.")
+
+    # Verifica se o id é completamente numérico
+    if not id_documento.isdigit():
+        print(f"ERRO: id de documento inválido '{id_documento}'")
+        abort(404, "Documento não encontrado.")
+    
+    id_formatado = f"{int(id_documento):03d}" 
+    nome_arquivo = f"{id_formatado}.txt"
+    
+    caminho_arquivo = os.path.join(caminho_corpus, categoria, nome_arquivo)
+    
+    caminho_absoluto_corpus = os.path.abspath(caminho_corpus)
+    caminho_absoluto_arquivo = os.path.abspath(caminho_arquivo)
+    
+    if not os.path.exists(caminho_absoluto_arquivo):
+        print(f"ERRO: Arquivo não encontrado em {caminho_absoluto_arquivo}") 
+    
+    with open(caminho_arquivo, 'r', encoding='latin-1') as f:
+        conteudo = f.read()
+            
+    documento = {
+        'categoria': categoria, 
+        'id': id_formatado, 
+        'conteudo': conteudo
+    }
+
+    artigo_salvo = False
+    if 'usuario' in session:
+        artigo_salvo = obter_servico_artigos_salvos().artigo_esta_salvo(session['usuario'], categoria, id_formatado)
+    
+    return render_template('exibir_documento.html', documento=documento, artigo_salvo=artigo_salvo,)
 
 if __name__ == '__main__':
     host = os.getenv('HOST', '127.0.0.1')
