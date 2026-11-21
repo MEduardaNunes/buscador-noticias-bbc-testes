@@ -137,3 +137,16 @@ class TestServicoArtigosSalvos:
             ("ana", "tech", "-1", "Identificador de documento inválido"),
         ],
     )
+    
+    def test_salvar_com_identificadores_invalidos_lanca_value_error(self, usuario, categoria, doc_id, mensagem_esperada):
+        servico = ServicoArtigosSalvos(repositorio=RepositorioArtigosSalvosFake())
+
+        with pytest.raises(ValueError, match=mensagem_esperada):
+            servico.salvar_artigo(usuario, categoria, doc_id)
+
+    @pytest.mark.parametrize("usuario_invalido", ["", "   ", None])
+    def test_listar_artigos_com_usuario_invalido_lanca_value_error(self, usuario_invalido):
+        servico = ServicoArtigosSalvos(repositorio=RepositorioArtigosSalvosFake())
+
+        with pytest.raises(ValueError, match="Usuário é obrigatório."):
+            servico.listar_artigos(usuario_invalido)
