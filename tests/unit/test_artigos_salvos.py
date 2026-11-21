@@ -150,3 +150,17 @@ class TestServicoArtigosSalvos:
 
         with pytest.raises(ValueError, match="Usuário é obrigatório."):
             servico.listar_artigos(usuario_invalido)
+     
+    class TestRepositorioArtigosSalvosSQLite:
+    @pytest.fixture
+    def repositorio(self, tmp_path):
+        db_path = tmp_path / "test_artigos.db"
+
+        def conexao_factory():
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            return conn
+
+        repo = RepositorioArtigosSalvosSQLite(conexao_factory)
+        repo.inicializar_tabela()
+        return repo
