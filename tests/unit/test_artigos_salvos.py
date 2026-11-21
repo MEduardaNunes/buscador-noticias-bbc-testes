@@ -178,3 +178,24 @@ class TestRepositorioArtigosSalvosSQLite:
 
         assert inserido_novamente is False
 
+    def test_listar_por_usuario_ordena_do_mais_recente_para_o_mais_antigo(self, repositorio):
+        repositorio.salvar("ana", "tech", "001", "2026-11-21T10:00:00+00:00")
+        repositorio.salvar("ana", "sport", "002", "2026-11-21T10:05:00+00:00")
+        repositorio.salvar("bruno", "business", "003", "2026-11-21T10:10:00+00:00")
+
+        resultado = repositorio.listar_por_usuario("ana")
+
+        assert resultado == [
+            {
+                "categoria": "sport",
+                "doc_id": "002",
+                "id_completo": "sport/002",
+                "salvo_em": "2026-11-21T10:05:00+00:00",
+            },
+            {
+                "categoria": "tech",
+                "doc_id": "001",
+                "id_completo": "tech/001",
+                "salvo_em": "2026-11-21T10:00:00+00:00",
+            },
+        ]
