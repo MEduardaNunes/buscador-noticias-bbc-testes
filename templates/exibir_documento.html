@@ -16,7 +16,23 @@
 
     <div class="central">
         <h1>{{ documento.categoria | capitalize }}/{{ documento.id }}</h1> 
-        
+        <div class="acoes-artigo">
+            {% if artigo_salvo %}
+                <form method="POST" action="{{ url_for('remover_artigo') }}">
+                    <input type="hidden" name="categoria" value="{{ documento.categoria }}">
+                    <input type="hidden" name="doc_id" value="{{ documento.id }}">
+                    <input type="hidden" name="next" value="{{ request.url }}">
+                    <button type="submit" class="botao-remover-salvo">Remover dos salvos</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{{ url_for('salvar_artigo') }}">
+                    <input type="hidden" name="categoria" value="{{ documento.categoria }}">
+                    <input type="hidden" name="doc_id" value="{{ documento.id }}">
+                    <input type="hidden" name="next" value="{{ request.url }}">
+                    <button type="submit" id="botao-salvar-artigo">Salvar artigo</button>
+                </form>
+            {% endif %}
+        </div>
         <hr>
 
         <div class="conteudo-documento">
