@@ -1,5 +1,6 @@
 # tp-testes
 
+Repositório do trabalho prático de **Teste de Software**, contendo uma máquina de busca web sobre o corpus de notícias da BBC e sua suíte de testes de unidade e End-to-End (E2E).
 
 ## Integrantes
 - Beatriz Camilly Gulart Pereira
@@ -7,13 +8,48 @@
 - Maria Eduarda Nunes e Carvalho de Vasconcelos Costa
 
 ## Sobre o sistema
-Breve descrição do sistema e suas funcionalidades
+Protótipo funcional de **máquina de busca web** desenvolvido para indexar e consultar 2.225 notícias da BBC (base de Greene e Cunningham, 2006).
+
+**Principais funcionalidades:**
+- **Indexação e persistência:** constrói um índice invertido baseado em **Trie Compacta** e salva a estrutura e as estatísticas dos termos em arquivo `.dat` para reutilização em disco.
+- **Consultas booleanas:** processa expressões com os operadores `AND`, `OR`, `NOT` e parênteses por meio de um *parser* recursivo definido por gramática EBNF.
+- **Ranqueamento e paginação:** ordena os documentos com *mergesort* pela média dos *z-scores* dos termos da consulta e exibe os resultados em páginas de 10 itens com *snippets* destacados.
+- **Navegação web:** permite abrir o conteúdo completo de cada documento, consultar o histórico das 10 buscas mais recentes da sessão e acessar a página de ajuda com exemplos de sintaxe.
 
 ## Tecnologias
-Breve explicação sobre as tecnologias utilizadas
+- **Aplicação:** Python, Flask, Jinja2, HTML e CSS.
+- **Testes de unidade e cobertura:** `pytest` e `pytest-cov`.
+- **Testes End-to-End (E2E):** Cypress.
+- **Integração Contínua (CI/CD):** GitHub Actions (execução automatizada em Linux, macOS e Windows e publicação do relatório de cobertura).
+
+## Como executar
+
+### Aplicação
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+### Testes de unidade e cobertura
+```bash
+pytest
+pytest --cov=modules --cov-report=term-missing
+```
+
+### Testes E2E (Cypress)
+Com o servidor Flask em execução (python app.py):
+```bash
+npx cypress open   # modo interativo
+npx cypress run    # modo headless
+```
 
 ## Uso de IA
-Uso de IA: detalhes sobre quais ferramentas de IA foram utilizadas e como contribuíram para o desenvolvimento.
+Ferramentas de IA generativa (como **Gemini** *[adicione outras, se houver]*) foram utilizadas como apoio durante o desenvolvimento para:
+- revisar os testes de unidade e End-to-End (E2E) de acordo com as recomendações e boas práticas da disciplina;
+- auxiliar na nomeação clara e descritiva de commits e funções de teste;
+- apoiar na identificação e correção de erros durante a implementação e execução das suítes.
+
+Todas as sugestões foram revisadas, adaptadas ao código do projeto e validadas pela equipe.
 
 ## TO-DO
 - Trocar o nome do repositório para um mais significativo
