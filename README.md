@@ -1,4 +1,4 @@
-# tp-testes
+# Trabalho Prático de Testes: Buscador de notícias web sobre notícias da BBC
 
 Repositório do trabalho prático de **Teste de Software**, contendo uma máquina de busca web sobre o corpus de notícias da BBC e sua suíte de testes de unidade e End-to-End (E2E).
 
@@ -72,7 +72,8 @@ make test-e2e
 Ferramentas de IA generativa (como **Gemini** *[adicione outras, se houver]*) foram utilizadas como apoio durante o desenvolvimento para:
 - revisar os testes de unidade e End-to-End (E2E) de acordo com as recomendações e boas práticas da disciplina;
 - auxiliar na nomeação clara e descritiva de commits e funções de teste;
-- apoiar na identificação e correção de erros durante a implementação e execução das suítes.
+- apoiar na identificação e correção de erros durante a implementação e execução das suítes;
+- verificar pontos do código não cobertos pela suíte de testes e acrescentar testes para esses casos.
 
 Todas as sugestões foram revisadas, adaptadas ao código do projeto e validadas pela equipe.
 
