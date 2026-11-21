@@ -48,7 +48,42 @@
                 </p>
             </div>
 
-            
+            <div class="ajuda-bloco">
+                <h2> Operadores Lógicos </h2>
+                <ul class="ajuda-lista">
+                    <li>
+                        <strong>AND</strong> - busca arquivos que tenham ambos os termos.<br>
+                        <code>x AND y</code>
+                    </li>
+
+                    <li><strong>OR</strong> - busca arquivos que contenham pelo menos um dos termos.<br>
+                        <code>x OR y</code>
+                    </li>
+
+                    <li><strong>NOT</strong> - exclui arquivos que contenham o termo.<br>
+                        <code>NOT x</code>
+                    </li>
+
+                    <li><strong>( )</strong> - define a ordem das operações.<br>
+                        <code>(expressão)</code>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="ajuda-alerta">
+                <h2> Atenção </h2>
+                <p> Os operadores lógicos devem ser escritos em letras maiúsculas (ex: <code>AND</code>). 
+                Caso contrário, serão interpretados como termos normais.</p>
+            </div>
+
+            <div class="ajuda-exemplos">
+                <h2> Exemplos de buscas incorretas </h2>
+                <ul>
+                    <li><code>happy AND</code> ou <code>AND happy</code> → faltam termos.</li>
+                    <li><code>happy and sad</code> → operadores em minúsculas são ignorados.</li>
+                    <li><code>()</code> ou <code>happy AND (</code> → parênteses incorretos.</li>
+                </ul>
+            </div>
         </section>
     </div>
 </body>
