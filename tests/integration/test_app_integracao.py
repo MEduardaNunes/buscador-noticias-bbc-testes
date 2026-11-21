@@ -215,7 +215,8 @@ def test_busca_rejeita_mensagem_vazia(cliente):
     resposta = cliente.post("/search", data={"mensagem": "   "})
 
     assert resposta.status_code == 400
-
+    
+# App.py: Beatriz
 def test_obter_servico_artigos_salvos_retorna_padrao_quando_nao_configurado(cliente):
     servico = app.obter_servico_artigos_salvos()
 
@@ -229,3 +230,29 @@ def test_obter_servico_artigos_salvos_retorna_instancia_configurada(cliente, mon
     servico = app.obter_servico_artigos_salvos()
 
     assert servico is servico_customizado
+
+@pytest.mark.parametrize(
+    "metodo,rota,dados",
+    [
+        ("get", "/artigos-salvos", None),
+        ("post", "/artigos-salvos/salvar", {"categoria": "tech", "doc_id": "001"}),
+        ("post", "/artigos-salvos/remover", {"categoria": "tech", "doc_id": "001"}),
+    ],
+)
+def test_rotas_artigos_salvos_redirecionam_sem_sessao(cliente, metodo, rota, dados):
+    resposta = getattr(cliente, metodo)(rota, data=dados, follow_redirects=False)
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith("/login")
+
+
+def test_artigos_salvos_exibe_estado_vazio_para_usuario_sem_artigos(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.get("/artigos-salvos")
+
+    assert resposta.status_code == 200
+    assert "Você ainda não salvou nenhum artigo." in resposta.get_data(as_text=True)
+
+# -----------
