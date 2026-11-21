@@ -129,11 +129,18 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/historico', methods=['GET'])
+@app.route('/historico', methods=['GET', 'POST'])
 def historico():
-    """Página de histórico de consultas."""
-    return "Histórico de consultas", 200
+    """Exibe o histórico de buscas e permite nova busca a partir dele."""
+    
+    if 'historico' not in session:
+        session['historico'] = []
 
+    if request.method == 'POST':
+        termo = request.form['mensagem']
+        return redirect(url_for('search_results', termo = termo))
+
+    return render_template('historico.html', historico = session['historico'])
 
 @app.route('/ajuda', methods=['GET'])
 def ajuda():
