@@ -23,17 +23,38 @@ Protótipo funcional de **máquina de busca web** desenvolvido para indexar e co
 - **Integração Contínua (CI/CD):** GitHub Actions (execução automatizada em Linux, macOS e Windows e publicação do relatório de cobertura).
 
 ## Como executar
+Abaixo, estão listados os comandos para executar a aplicação, os testes de unidade e de integração, a cobertura dos testes e os testes E2E.
 
 ### Aplicação
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
-
-### Testes de unidade e cobertura
+Ou utilizando o comando make:
 ```bash
-pytest
+make run
+```
+
+### Testes de unidade e de integração
+```bash
+python -m pytest tests/unit/            # apenas unidade
+python -m pytest tests/integration/     # apenas integração
+python -m pytest tests/                 # unidade e integração 
+```
+Ou utilizando o comando make:
+```bash
+make test-unit          # apenas unidade
+make test-integration   # apenas integração
+make test               # unidade e integração
+```
+
+### Teste de cobertura
+```bash
 pytest --cov=modules --cov-report=term-missing
+```
+Ou utilizando o comando make:
+```bash
+make coverage
 ```
 
 ### Testes E2E (Cypress)
@@ -41,6 +62,10 @@ Com o servidor Flask em execução (python app.py):
 ```bash
 npx cypress open   # modo interativo
 npx cypress run    # modo headless
+```
+Ou utilizando o comando make (com modo interativo):
+```bash
+make test-e2e
 ```
 
 ## Uso de IA
