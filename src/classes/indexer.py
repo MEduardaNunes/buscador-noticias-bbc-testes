@@ -86,7 +86,9 @@ class Corpus:
             caminho_corpus (str): O caminho para o diretório raiz do corpus de documentos
         """
         self.todos_documentos.clear()
-        
+        self.estatisticas_corpus.clear()
+        self.trie = TrieCompacta()
+            
         documentos = ler_documentos(caminho_corpus)
         total_docs = len(documentos)
         
