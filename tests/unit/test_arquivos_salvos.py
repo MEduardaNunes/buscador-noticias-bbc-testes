@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from src.arquivos_salvos import (
+from src.artigos_salvos import (
     RepositorioArtigosSalvosSQLite,
     ServicoArtigosSalvos,
 )
