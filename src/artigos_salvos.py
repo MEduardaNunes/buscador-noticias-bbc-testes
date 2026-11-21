@@ -23,3 +23,25 @@ class RepositorioArtigosSalvosSQLite:
                 )
                 """
             )
+            
+    def salvar(self, usuario: str, categoria: str, doc_id: str, salvo_em: str) -> bool:
+        with self._conexao_factory() as conexao:
+            cursor = conexao.execute(
+                """
+                INSERT OR IGNORE INTO artigos_salvos (usuario, categoria, doc_id, salvo_em)
+                VALUES (?, ?, ?, ?)
+                """,
+                (usuario, categoria, doc_id, salvo_em),
+            )
+            return cursor.rowcount > 0
+
+    def remover(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        with self._conexao_factory() as conexao:
+            cursor = conexao.execute(
+                """
+                DELETE FROM artigos_salvos
+                WHERE usuario = ? AND categoria = ? AND doc_id = ?
+                """,
+                (usuario, categoria, doc_id),
+            )
+            return cursor.rowcount > 0
