@@ -263,7 +263,7 @@ class Corpus:
                 valor, lista_invertida_dict = self.parse_linha_trie(linha)
 
                 novo_no = NoTrie(valor)
-                novo_no.lista_invertida = lista_invertida_dict
+                novo_no.documentos = lista_invertida_dict
 
                 while len(pilha_de_pais) > profundidade_atual:
                     pilha_de_pais.pop()
