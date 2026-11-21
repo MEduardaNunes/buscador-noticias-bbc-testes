@@ -187,3 +187,12 @@ class TestCarregarDeDisco:
         sucesso = corpus.carregar_de_disco(str(tmp_path / "nao_existe.dat"))
 
         assert sucesso is False
+        
+     def test_retorna_false_quando_arquivo_nao_possui_delimitadores_obrigatorios(self, tmp_path):
+        arquivo_invalido = tmp_path / "invalido.dat"
+        arquivo_invalido.write_text("conteudo qualquer sem cabecalhos\n", encoding="utf-8")
+        corpus = Corpus()
+
+        sucesso = corpus.carregar_de_disco(str(arquivo_invalido))
+
+        assert sucesso is False
