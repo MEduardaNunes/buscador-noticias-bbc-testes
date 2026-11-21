@@ -357,7 +357,7 @@ class Corpus:
         """Método auxiliar recursivo para salvar os nós da trie usando indentação para representar a estrutura da árvore."""
         indentacao = "  " * profundidade
         
-        lista_invertida_str = self._formatar_lista_invertida(no.lista_invertida)
+        lista_invertida_str = self._formatar_lista_invertida(no.documentos)
         
         valor_seguro = self._aplicar_escape(no.valor)
         
