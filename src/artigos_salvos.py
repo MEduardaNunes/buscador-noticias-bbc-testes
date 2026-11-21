@@ -3,6 +3,21 @@ from typing import Callable, Protocol
 
 from src.models import Categoria
 
+class RepositorioArtigosSalvos(Protocol):
+    """Contrato de persistência para permitir substituição por Fakes/Stubs em testes."""
+
+    def salvar(self, usuario: str, categoria: str, doc_id: str, salvo_em: str) -> bool:
+        ...
+
+    def remover(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        ...
+
+    def listar_por_usuario(self, usuario: str) -> list[dict]:
+        ...
+
+    def existe(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        ...
+
 class RepositorioArtigosSalvosSQLite:
     """Implementação concreta de persistência em SQLite."""
 
