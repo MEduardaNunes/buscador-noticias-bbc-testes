@@ -359,6 +359,24 @@ def test_salvar_ou_remover_artigo_com_dados_invalidos_retorna_400(cliente, rota,
 
     assert resposta.status_code == 400
 
+def test_historico_get_inicializa_lista_vazia_na_sessao(cliente):
+    resposta = cliente.get("/historico")
+
+    assert resposta.status_code == 200
+    with cliente.session_transaction() as sessao:
+        assert sessao["historico"] == []
+
+
+def test_historico_get_exibe_termos_salvos_na_sessao(cliente):
+    with cliente.session_transaction() as sessao:
+        sessao["historico"] = ["music", "economy"]
+
+    resposta = cliente.get("/historico")
+
+    html = resposta.get_data(as_text=True)
+    assert resposta.status_code == 200
+    assert "music" in html
+    assert "economy" in html
 
 
 # -----------
