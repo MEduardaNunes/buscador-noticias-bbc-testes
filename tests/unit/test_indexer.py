@@ -130,3 +130,9 @@ class TestParseLinhaTrie:
 
         assert valor == ""
         assert lista_invertida == {}
+        
+    def test_lanca_value_error_para_linha_mal_formatada(self):
+        corpus = Corpus()
+
+        with pytest.raises(ValueError):
+            corpus.parse_linha_trie("linha_sem_formato_valido")
