@@ -255,4 +255,32 @@ def test_artigos_salvos_exibe_estado_vazio_para_usuario_sem_artigos(cliente):
     assert resposta.status_code == 200
     assert "Você ainda não salvou nenhum artigo." in resposta.get_data(as_text=True)
 
+def test_salvar_artigo_persiste_e_lista_para_usuario_autenticado(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post(
+        "/artigos-salvos/salvar",
+        data={"categoria": "tech", "doc_id": "001"},
+        follow_redirects=True,
+    )
+
+    assert resposta.status_code == 200
+    assert "tech/001" in resposta.get_data(as_text=True)
+
+
+def test_salvar_artigo_duplicado_nao_duplica_na_lista(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+    cliente.post("/artigos-salvos/salvar", data={"categoria": "sport", "doc_id": "010"})
+
+    resposta = cliente.post(
+        "/artigos-salvos/salvar",
+        data={"categoria": "sport", "doc_id": "010"},
+        follow_redirects=True,
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.get_data(as_text=True).count("sport/010") == 1
+
 # -----------
