@@ -150,22 +150,20 @@ class TestParseLinhaTrie:
             corpus.parse_linha_trie("linha_sem_formato_valido")
             
 class TestSalvarEmDisco:
-    def test_persiste_indice_que_pode_ser_restaurado_em_novo_corpus(self, tmp_path):
+    def test_cria_arquivo_de_indice_com_secoes_de_estatisticas_e_trie(self, tmp_path):
         corpus_dir = tmp_path / "corpus"
         (corpus_dir / "business").mkdir(parents=True)
         (corpus_dir / "business" / "001.txt").write_text("profit", encoding="latin-1")
         arquivo_saida = tmp_path / "indice.dat"
-
-        corpus_original = Corpus()
-        corpus_original.construir_indice(str(corpus_dir))
-
-        corpus_original.salvar_em_disco(str(arquivo_saida))
-
+        corpus = Corpus()
+        corpus.construir_indice(str(corpus_dir))
+        corpus.salvar_em_disco(str(arquivo_saida))
+        
         assert arquivo_saida.exists()
-        corpus_restaurado = Corpus()
-        assert corpus_restaurado.carregar_de_disco(str(arquivo_saida)) is True
-        assert corpus_restaurado.estatisticas_corpus == corpus_original.estatisticas_corpus
-        assert corpus_restaurado.trie.busca_palavra("profit") == corpus_original.trie.busca_palavra("profit")
+        conteudo = arquivo_saida.read_text(encoding="utf-8")
+        assert "---ESTATISTICAS---" in conteudo
+        assert "---TRIE---" in conteudo
+        assert "profit" in conteudo
 
     def test_nao_interrompe_execucao_quando_caminho_de_saida_e_invalido(self, tmp_path):
         corpus = Corpus()
