@@ -367,7 +367,7 @@ def test_historico_get_inicializa_lista_vazia_na_sessao(cliente):
         assert sessao["historico"] == []
 
 
-def test_historico_get_exibe_termos_salvos_na_sessao(cliente):
+def test_historico_get_exibe_termos_salvos_em_ordem_reversa(cliente):
     with cliente.session_transaction() as sessao:
         sessao["historico"] = ["music", "economy"]
 
@@ -375,8 +375,9 @@ def test_historico_get_exibe_termos_salvos_na_sessao(cliente):
 
     html = resposta.get_data(as_text=True)
     assert resposta.status_code == 200
-    assert "music" in html
-    assert "economy" in html
+    assert "/search?termo=music" in html
+    assert "/search?termo=economy" in html
+    assert html.index("/search?termo=economy") < html.index("/search?termo=music")
 
 def test_historico_post_redireciona_para_busca_com_termo(cliente):
     resposta = cliente.post(
@@ -394,9 +395,11 @@ def test_historico_post_sem_mensagem_retorna_400(cliente):
     assert resposta.status_code == 400
 
 
-def test_ajuda_renderiza_pagina_com_sucesso(cliente):
+def test_ajuda_renderiza_pagina_com_instrucoes_de_busca(cliente):
     resposta = cliente.get("/ajuda")
 
+    html = resposta.get_data(as_text=True)
     assert resposta.status_code == 200
-    assert len(resposta.get_data(as_text=True).strip()) > 0
+    assert "Ajuda" in html
+    assert "Operadores Lógicos" in html
 # -----------
