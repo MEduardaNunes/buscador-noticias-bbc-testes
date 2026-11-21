@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Artigos Salvos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="item">
+            <a href="{{ url_for('home') }}">
+                <button id="botao-inicio" aria-label="Inicio">
+                    <img src="{{ url_for('static', filename='icone-inicio.png') }}" alt="Inicio">
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <div class="central">
+        <h1>Artigos Salvos</h1>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                {% for categoria, texto in mensagens %}
+                    <p class="auth-mensagem {{ categoria }}">{{ texto }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if artigos %}
+            <ul>
+                {% for artigo in artigos %}
+                    <li class="resultado-item">
+                        <div class="arquivo-titulo">
+                            <span class="nome-arquivo">{{ artigo.id_completo }}</span>
+                            <form method="POST" action="{{ url_for('remover_artigo') }}">
+                                <input type="hidden" name="categoria" value="{{ artigo.categoria }}">
+                                <input type="hidden" name="doc_id" value="{{ artigo.doc_id }}">
+                                <input type="hidden" name="next" value="{{ url_for('artigos_salvos') }}">
+                                <button type="submit" class="botao-remover-salvo">Remover</button>
+                            </form>
+                        </div>
+                        <hr class="divisor">
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Você ainda não salvou nenhum artigo.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
