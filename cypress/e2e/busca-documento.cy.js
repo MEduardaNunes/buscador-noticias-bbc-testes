@@ -1,0 +1,31 @@
+describe('Busca e visualização de documento', () => {
+  it('deve buscar um termo, abrir o primeiro documento retornado e registrar no histórico', () => {
+    const termoBusca = 'music';
+    cy.visit('/');
+
+    // realiza a busca pela interface
+    cy.get('input[name="mensagem"]').type(termoBusca);
+    cy.get('button[type="submit"]').click();
+
+    // redirecionou para /search e exibiu pelo menosum resultado clicável
+    cy.url().should('include', `/search?termo=${termoBusca}`);
+    cy.get('a.resultado-link').should('have.length.greaterThan', 0);
+
+    // abre o primeiro documento da lista
+    cy.get('a.resultado-link').first().click();
+
+    // navega para /documento/<categoria>/<id> e exibe conteúdo não vazio
+    cy.url().should('match', /\/documento\/[^/]+\/\d+$/);
+    cy.get('.conteudo-documento')
+      .should('be.visible')
+      .invoke('text')
+      .should('match', /\S+/);
+
+    // acessa o histórico
+    cy.visit('/historico');
+
+    // confirma que o termo buscado foi registrado na sessão
+    cy.contains('a.item_historico', termoBusca).should('be.visible');
+  });
+});
+
