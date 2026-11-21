@@ -165,13 +165,15 @@ class TestSalvarEmDisco:
         assert "---TRIE---" in conteudo
         assert "profit" in conteudo
 
-    def test_nao_interrompe_execucao_quando_caminho_de_saida_e_invalido(self, tmp_path):
+    def test_nao_interrompe_execucao_e_registra_erro_quando_caminho_de_saida_e_invalido(self, tmp_path, capsys):
         corpus = Corpus()
         caminho_diretorio = tmp_path / "pasta_existente"
         caminho_diretorio.mkdir()
-
-        corpus.salvar_em_disco(str(caminho_diretorio)) # não deve lançar exceção 
-
+        
+        corpus.salvar_em_disco(str(caminho_diretorio))
+        saida = capsys.readouterr().out
+        assert "Erro ao salvar o índice" in saida
+        assert caminho_diretorio.is_dir()
 
 class TestCarregarDeDisco:
     def test_restaura_estatisticas_e_trie_salvas_incluindo_termos_com_caracteres_especiais(self, tmp_path):
