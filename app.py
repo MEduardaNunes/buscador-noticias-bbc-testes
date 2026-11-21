@@ -35,6 +35,16 @@ def inicializar_banco():
             """
         )
 
+def obter_servico_artigos_salvos() -> ServicoArtigosSalvos:
+    servico_configurado = app.config.get('SERVICO_ARTIGOS_SALVOS')
+    if servico_configurado is not None:
+        return servico_configurado
+
+    repositorio = RepositorioArtigosSalvosSQLite(get_db)
+    return ServicoArtigosSalvos(repositorio)
+
+
+RepositorioArtigosSalvosSQLite(get_db).inicializar_tabela()
 
 inicializar_banco()
 
