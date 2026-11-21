@@ -100,3 +100,16 @@ class TestConstruirIndice:
 
         assert corpus.todos_documentos == set()
         assert corpus.estatisticas_corpus == {}
+
+class TestParseLinhaTrie:
+    def test_extrai_valor_e_multiplas_ocorrencias_de_linha_valida(self):
+        corpus = Corpus()
+        linha = (
+            "  ('market',{(1, 23):{'frequencia':3, 'primeira_posicao':10}, "
+            "(4, 5):{'frequencia':1, 'primeira_posicao':0}})\n"
+        )
+
+        valor, lista_invertida = corpus.parse_linha_trie(linha)
+
+        assert valor == "market"
+        assert lista_invertida == {(1, 23): {"frequencia": 3, "primeira_posicao": 10}, (4, 5): {"frequencia": 1, "primeira_posicao": 0},}
