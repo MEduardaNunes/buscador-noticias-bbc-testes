@@ -45,3 +45,25 @@ class RepositorioArtigosSalvosSQLite:
                 (usuario, categoria, doc_id),
             )
             return cursor.rowcount > 0
+            
+    def listar_por_usuario(self, usuario: str) -> list[dict]:
+        with self._conexao_factory() as conexao:
+            registros = conexao.execute(
+                """
+                SELECT categoria, doc_id, salvo_em
+                FROM artigos_salvos
+                WHERE usuario = ?
+                ORDER BY id DESC
+                """,
+                (usuario,),
+            ).fetchall()
+
+        return [
+            {
+                "categoria": r["categoria"],
+                "doc_id": r["doc_id"],
+                "id_completo": f"{r['categoria']}/{r['doc_id']}",
+                "salvo_em": r["salvo_em"],
+            }
+            for r in registros
+        ]
