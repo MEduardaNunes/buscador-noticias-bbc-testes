@@ -113,3 +113,11 @@ class TestParseLinhaTrie:
 
         assert valor == "market"
         assert lista_invertida == {(1, 23): {"frequencia": 3, "primeira_posicao": 10}, (4, 5): {"frequencia": 1, "primeira_posicao": 0},}
+
+    def test_remove_caracteres_escapados_do_valor_do_no(self):
+        corpus = Corpus()
+        linha = r"('it\'s\:a\,b\(c\)\\',{})"
+        valor, lista_invertida = corpus.parse_linha_trie(linha)
+
+        assert valor == "it's:a,b(c)\\"
+        assert lista_invertida == {}
