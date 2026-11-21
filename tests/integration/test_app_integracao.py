@@ -283,4 +283,33 @@ def test_salvar_artigo_duplicado_nao_duplica_na_lista(cliente):
     assert resposta.status_code == 200
     assert resposta.get_data(as_text=True).count("sport/010") == 1
 
+def test_remover_artigo_exclui_registro_da_lista(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+    cliente.post("/artigos-salvos/salvar", data={"categoria": "politics", "doc_id": "005"})
+
+    resposta = cliente.post(
+        "/artigos-salvos/remover",
+        data={"categoria": "politics", "doc_id": "005"},
+        follow_redirects=True,
+    )
+
+    assert resposta.status_code == 200
+    assert "politics/005" not in resposta.get_data(as_text=True)
+
+
+def test_artigos_salvos_isola_registros_entre_usuarios(cliente):
+    cadastrar(cliente, nome="Ana", usuario="ana")
+    cadastrar(cliente, nome="Bruno", usuario="bruno")
+
+    entrar(cliente, usuario="ana")
+    cliente.post("/artigos-salvos/salvar", data={"categoria": "tech", "doc_id": "001"})
+    cliente.post("/logout")
+
+    entrar(cliente, usuario="bruno")
+    resposta = cliente.get("/artigos-salvos")
+
+    assert resposta.status_code == 200
+    assert "tech/001" not in resposta.get_data(as_text=True)
+
 # -----------
