@@ -49,3 +49,11 @@ class TestProcessarTexto:
         resultado = processar_texto(texto_vazio)
 
         assert resultado == []
+
+    def test_mantem_caracteres_internos_como_parte_da_palavra(self):
+        texto = "It's well-known"
+
+        resultado = processar_texto(texto)
+
+        assert resultado == [("it's", 0), ("well-known", 5)]
+
