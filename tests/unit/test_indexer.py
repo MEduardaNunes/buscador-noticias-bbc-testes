@@ -121,3 +121,12 @@ class TestParseLinhaTrie:
 
         assert valor == "it's:a,b(c)\\"
         assert lista_invertida == {}
+
+    @pytest.mark.parametrize("linha_vazia", ["('',{})", "(,'{}')"])
+    def test_retorna_valor_e_dicionario_vazios_para_representacoes_de_no_vazio(self, linha_vazia):
+        corpus = Corpus()
+
+        valor, lista_invertida = corpus.parse_linha_trie(linha_vazia)
+
+        assert valor == ""
+        assert lista_invertida == {}
