@@ -1,0 +1,19 @@
+describe('Página de ajuda', () => {
+  it('deve acessar a página de ajuda pela interface, exibir o conteúdo e retornar à página anterior', () => {
+    cy.visit('/historico');
+
+    // acessa a página de ajuda pelo botão da interface
+    cy.get('#ajuda').click();
+
+    // confirma navegação para /ajuda e exibição da seção principal (sem acoplar a textos exatos)
+    cy.url().should('include', '/ajuda');
+    cy.get('h1').should('be.visible');
+    cy.get('.ajuda-section').should('be.visible').and('not.be.empty');
+
+    // retorna usando o botão voltar (window.history.back())
+    cy.get('#botao-voltar').click();
+
+    // confirma retorno à página de origem
+    cy.url().should('include', '/historico');
+  });
+});
