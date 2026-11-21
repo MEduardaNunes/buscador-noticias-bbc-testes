@@ -11,7 +11,7 @@
     <div class = "container">
         <div class = "item">
             <a href = "{{ url_for('perfil') }}">
-                <button id = "perfil">
+                <button id = "perfil" aria-label="Perfil">
                     <img src="{{ url_for('static', filename='perfil.png') }}" alt="perfil">
                 </button>
             </a>
@@ -27,7 +27,7 @@
 
         <div class = "item">
             <a href = "{{ url_for('historico') }}">
-                <button id = "historico">
+                <button id = "historico" aria-label="Histórico">
                     <img src="{{ url_for('static', filename='historico.png') }}" alt="Histórico">
                 </button>
             </a>
@@ -35,7 +35,7 @@
 
         <div class = "item">
             <a href = "{{ url_for('ajuda') }}">
-                <button id = "ajuda"> 
+                <button id = "ajuda" aria-label="Como usar"> 
                     <img src="{{ url_for('static', filename='ajuda.png') }}" alt="Ajuda">
                 </button>
             </a>
@@ -43,7 +43,7 @@
 
         <div class = "item">
             <form method="POST" action="{{ url_for('logout') }}">
-                <button type="submit" id="logout">
+                <button type="submit" id="logout" aria-label="Logout">
                     <img src="{{ url_for('static', filename='logout.png') }}" alt="Logout">
                 </button>
             </form>

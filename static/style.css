@@ -389,6 +389,18 @@ a.resultado-link:hover .resultado-item {
     display: block;
 }
 
+#salvos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#salvos img {
+    height: 24px;
+    width: auto;
+    display: block;
+}
+
 .auth-central {
     max-width: 520px;
     margin: 0 auto;
