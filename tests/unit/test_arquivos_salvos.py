@@ -27,3 +27,26 @@ class RepositorioArtigosSalvosFake:
             }
         )
         return True
+
+    def remover(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        for i, reg in enumerate(self._registros):
+            if (
+                reg["usuario"] == usuario
+                and reg["categoria"] == categoria
+                and reg["doc_id"] == doc_id
+            ):
+                self._registros.pop(i)
+                return True
+        return False
+
+    def listar_por_usuario(self, usuario: str) -> list[dict]:
+        return [
+            {
+                "categoria": r["categoria"],
+                "doc_id": r["doc_id"],
+                "id_completo": r["id_completo"],
+                "salvo_em": r["salvo_em"],
+            }
+            for r in reversed(self._registros)
+            if r["usuario"] == usuario
+        ]
