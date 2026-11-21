@@ -84,3 +84,12 @@ class TestConstruirIndice:
         corpus.construir_indice(str(tmp_path))
 
         assert corpus.estatisticas_corpus["python"] == {"media": 2.0, "desvio_padrao": 0}
+
+    def test_remove_pontuacao_nas_bordas_e_ignora_pontuacao_isolada_ou_repetida(self, tmp_path):
+        (tmp_path / "entertainment").mkdir()
+        (tmp_path / "entertainment" / "001.txt").write_text("cinema, ... !! ? filme;", encoding="latin-1")
+        corpus = Corpus()
+
+        corpus.construir_indice(str(tmp_path))
+
+        assert set(corpus.estatisticas_corpus.keys()) == {"cinema", "filme"}
