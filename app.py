@@ -237,6 +237,58 @@ def search_results():
 
     return render_template('index.html')
 
+@app.route('/artigos-salvos', methods=['GET'])
+def artigos_salvos():
+    """Lista os artigos salvos pelo usuário autenticado."""
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    servico = obter_servico_artigos_salvos()
+    artigos = servico.listar_artigos(session['usuario'])
+    return render_template('artigos_salvos.html', artigos=artigos)
+
+
+@app.route('/artigos-salvos/salvar', methods=['POST'])
+def salvar_artigo():
+    """Salva um artigo para o usuário autenticado."""
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    categoria = request.form.get('categoria', '').strip()
+    doc_id = request.form.get('doc_id', '').strip()
+    proximo = request.form.get('next') or url_for('artigos_salvos')
+
+    servico = obter_servico_artigos_salvos()
+    try:
+        inserido = servico.salvar_artigo(session['usuario'], categoria, doc_id)
+        if inserido:
+            flash('Artigo salvo com sucesso.', 'sucesso')
+        else:
+            flash('Este artigo já estava salvo.', 'sucesso')
+    except ValueError as erro:
+        abort(400, description=str(erro))
+
+    return redirect(proximo)
+
+
+@app.route('/artigos-salvos/remover', methods=['POST'])
+def remover_artigo():
+    """Remove um artigo da lista de salvos do usuário autenticado."""
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    categoria = request.form.get('categoria', '').strip()
+    doc_id = request.form.get('doc_id', '').strip()
+    proximo = request.form.get('next') or url_for('artigos_salvos')
+
+    servico = obter_servico_artigos_salvos()
+    try:
+        servico.remover_artigo(session['usuario'], categoria, doc_id)
+        flash('Artigo removido dos salvos.', 'sucesso')
+    except ValueError as erro:
+        abort(400, description=str(erro))
+
+    return redirect(proximo)
 
 if __name__ == '__main__':
     host = os.getenv('HOST', '127.0.0.1')
