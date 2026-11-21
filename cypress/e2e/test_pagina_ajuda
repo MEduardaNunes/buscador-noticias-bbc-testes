@@ -5,7 +5,7 @@ describe('Página de ajuda', () => {
     // acessa a página de ajuda pelo botão da interface
     cy.get('#ajuda').click();
 
-    // confirma navegação para /ajuda e exibição da seção principal (sem acoplar a textos exatos)
+    // confirma navegação para /ajuda e exibição da seção principal
     cy.url().should('include', '/ajuda');
     cy.get('h1').should('be.visible');
     cy.get('.ajuda-section').should('be.visible').and('not.be.empty');
