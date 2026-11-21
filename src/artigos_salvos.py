@@ -87,3 +87,27 @@ class ServicoArtigosSalvos:
     ):
         self._repositorio = repositorio
         self._relogio = relogio
+
+    @staticmethod
+    def _validar_identificadores(usuario: str, categoria: str, doc_id: str) -> tuple[str, str, str]:
+        usuario_limpo = (usuario or "").strip()
+        categoria_limpa = (categoria or "").strip().lower()
+        doc_id_limpo = (doc_id or "").strip()
+
+        if not usuario_limpo:
+            raise ValueError("Usuário é obrigatório.")
+
+        categorias_validas = {c.name for c in Categoria}
+        if categoria_limpa not in categorias_validas:
+            raise ValueError(f"Categoria inválida: '{categoria}'.")
+
+        if not doc_id_limpo or not doc_id_limpo.isdigit():
+            raise ValueError(f"Identificador de documento inválido: '{doc_id}'.")
+
+        return usuario_limpo, categoria_limpa, doc_id_limpo
+
+    def salvar_artigo(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        """Salva um artigo para o usuário. Retorna True se inserido, False se já existia."""
+        u, cat, did = self._validar_identificadores(usuario, categoria, doc_id)
+        salvo_em = self._relogio().isoformat()
+        return self._repositorio.salvar(u, cat, did, salvo_em)
