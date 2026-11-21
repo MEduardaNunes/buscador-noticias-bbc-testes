@@ -58,3 +58,21 @@ class RepositorioArtigosSalvosFake:
             and r["doc_id"] == doc_id
             for r in self._registros
         )
+        
+class TestServicoArtigosSalvos:
+    def test_salvar_artigo_normaliza_dados_e_registra_timestamp(self):
+        repo = RepositorioArtigosSalvosFake()
+        instante_fixo = datetime(2026, 11, 21, 12, 0, 0, tzinfo=timezone.utc)
+        servico = ServicoArtigosSalvos(repositorio=repo, relogio=lambda: instante_fixo)
+
+        inserido = servico.salvar_artigo("  ana  ", " TECH ", " 042 ")
+
+        assert inserido is True
+        assert servico.listar_artigos("ana") == [
+            {
+                "categoria": "tech",
+                "doc_id": "042",
+                "id_completo": "tech/042",
+                "salvo_em": "2026-11-21T12:00:00+00:00",
+            }
+        ]
