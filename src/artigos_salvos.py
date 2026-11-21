@@ -67,3 +67,15 @@ class RepositorioArtigosSalvosSQLite:
             }
             for r in registros
         ]
+        
+    def existe(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        with self._conexao_factory() as conexao:
+            registro = conexao.execute(
+                """
+                SELECT 1 FROM artigos_salvos
+                WHERE usuario = ? AND categoria = ? AND doc_id = ?
+                """,
+                (usuario, categoria, doc_id),
+            ).fetchone()
+        return registro is not None
+
