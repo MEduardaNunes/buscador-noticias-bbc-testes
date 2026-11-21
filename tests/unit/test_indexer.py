@@ -155,3 +155,9 @@ class TestSalvarEmDisco:
         assert corpus_restaurado.estatisticas_corpus == corpus_original.estatisticas_corpus
         assert corpus_restaurado.trie.busca_palavra("profit") == corpus_original.trie.busca_palavra("profit")
 
+    def test_nao_interrompe_execucao_quando_caminho_de_saida_e_invalido(self, tmp_path):
+        corpus = Corpus()
+        caminho_diretorio = tmp_path / "pasta_existente"
+        caminho_diretorio.mkdir()
+
+        corpus.salvar_em_disco(str(caminho_diretorio)) # não deve lançar exceção 
