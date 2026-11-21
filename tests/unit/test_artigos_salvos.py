@@ -96,3 +96,22 @@ class TestServicoArtigosSalvos:
 
         assert removido is True
         assert servico.artigo_esta_salvo("ana", "business", "010") is False
+
+    def test_remover_artigo_inexistente_retorna_false(self):
+        repo = RepositorioArtigosSalvosFake()
+        servico = ServicoArtigosSalvos(repositorio=repo)
+
+        removido = servico.remover_artigo("ana", "politics", "999")
+
+        assert removido is False
+
+    def test_listar_artigos_retorna_apenas_artigos_do_usuario(self):
+        repo = RepositorioArtigosSalvosFake()
+        servico = ServicoArtigosSalvos(repositorio=repo)
+        servico.salvar_artigo("ana", "tech", "001")
+        servico.salvar_artigo("bruno", "sport", "002")
+
+        artigos_ana = servico.listar_artigos("  ana  ")
+
+        assert len(artigos_ana) == 1
+        assert artigos_ana[0]["id_completo"] == "tech/001"
