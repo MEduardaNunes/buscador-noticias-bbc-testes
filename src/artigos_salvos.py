@@ -78,4 +78,12 @@ class RepositorioArtigosSalvosSQLite:
                 (usuario, categoria, doc_id),
             ).fetchone()
         return registro is not None
-
+        
+class ServicoArtigosSalvos:
+    def __init__(
+        self,
+        repositorio: RepositorioArtigosSalvos,
+        relogio: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
+    ):
+        self._repositorio = repositorio
+        self._relogio = relogio
