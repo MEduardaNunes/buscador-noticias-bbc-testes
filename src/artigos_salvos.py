@@ -111,3 +111,20 @@ class ServicoArtigosSalvos:
         u, cat, did = self._validar_identificadores(usuario, categoria, doc_id)
         salvo_em = self._relogio().isoformat()
         return self._repositorio.salvar(u, cat, did, salvo_em)
+
+    def remover_artigo(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        """Remove um artigo salvo. Retorna True se removido, False se não existia."""
+        u, cat, did = self._validar_identificadores(usuario, categoria, doc_id)
+        return self._repositorio.remover(u, cat, did)
+
+    def listar_artigos(self, usuario: str) -> list[dict]:
+        """Lista todos os artigos salvos pelo usuário."""
+        usuario_limpo = (usuario or "").strip()
+        if not usuario_limpo:
+            raise ValueError("Usuário é obrigatório.")
+        return self._repositorio.listar_por_usuario(usuario_limpo)
+
+    def artigo_esta_salvo(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        """Verifica se um artigo específico está salvo pelo usuário."""
+        u, cat, did = self._validar_identificadores(usuario, categoria, doc_id)
+        return self._repositorio.existe(u, cat, did)
