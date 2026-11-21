@@ -182,3 +182,8 @@ class TestCarregarDeDisco:
         assert corpus_carregado.trie.busca_palavra("it's") == {(Categoria.tech.value, 1): {"frequencia": 1, "primeira_posicao": 0}}
         assert corpus_carregado.trie.busca_palavra("data") == {(Categoria.tech.value, 1): {"frequencia": 1, "primeira_posicao": 9}}
 
+    def test_retorna_false_quando_arquivo_nao_existe(self, tmp_path):
+        corpus = Corpus()
+        sucesso = corpus.carregar_de_disco(str(tmp_path / "nao_existe.dat"))
+
+        assert sucesso is False
