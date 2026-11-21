@@ -151,7 +151,7 @@ class TestServicoArtigosSalvos:
         with pytest.raises(ValueError, match="Usuário é obrigatório."):
             servico.listar_artigos(usuario_invalido)
      
-    class TestRepositorioArtigosSalvosSQLite:
+class TestRepositorioArtigosSalvosSQLite:
     @pytest.fixture
     def repositorio(self, tmp_path):
         db_path = tmp_path / "test_artigos.db"
@@ -164,3 +164,17 @@ class TestServicoArtigosSalvos:
         repo = RepositorioArtigosSalvosSQLite(conexao_factory)
         repo.inicializar_tabela()
         return repo
+
+    def test_salvar_e_verificar_existencia_no_sqlite(self, repositorio):
+        inserido = repositorio.salvar("ana", "tech", "001", "2026-11-21T10:00:00+00:00")
+
+        assert inserido is True
+        assert repositorio.existe("ana", "tech", "001") is True
+        assert repositorio.existe("ana", "tech", "002") is False
+
+    def test_salvar_duplicado_respeita_restricao_unique(self, repositorio):
+        repositorio.salvar("ana", "tech", "001", "2026-11-21T10:00:00+00:00")
+        inserido_novamente = repositorio.salvar("ana", "tech", "001", "2026-11-21T11:00:00+00:00")
+
+        assert inserido_novamente is False
+
