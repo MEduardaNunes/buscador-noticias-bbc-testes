@@ -3,6 +3,7 @@ import os
 import sqlite3
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
+from src.artigos_salvos import RepositorioArtigosSalvosSQLite, ServicoArtigosSalvos
 
 load_dotenv()
 app = Flask(__name__)
