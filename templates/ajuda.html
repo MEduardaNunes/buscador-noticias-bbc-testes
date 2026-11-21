@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ajuda</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class = "container">
+        <div class = "item">
+            <a href = "{{ url_for('home') }}">
+                <button id = "botao-inicio" aria-label="Inicio">
+                    <img src="{{ url_for('static', filename='icone-inicio.png') }}" alt="Inicio">
+                </button>
+            </a>
+        </div>
+
+        <div class = "item">
+            <a href = "{{ url_for('historico') }}">
+                <button id = "historico">
+                    <img src="{{ url_for('static', filename='historico.png') }}" alt="Histórico">
+                </button>
+            </a>
+        </div>
+
+        <div class = "item">
+            <button id = "botao-voltar" onclick = "window.history.back()"> 
+                <img src="{{ url_for('static', filename='voltar.png') }}" alt="Voltar">
+            </button>
+        </div>
+    </div>
+    
+</body>
+
+</html>
