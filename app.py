@@ -385,6 +385,7 @@ def exibir_documento(categoria, id_documento):
     
     if not os.path.exists(caminho_absoluto_arquivo):
         print(f"ERRO: Arquivo não encontrado em {caminho_absoluto_arquivo}") 
+        abort(404, "Documento não encontrado.")
     
     with open(caminho_arquivo, 'r', encoding='latin-1') as f:
         conteudo = f.read()

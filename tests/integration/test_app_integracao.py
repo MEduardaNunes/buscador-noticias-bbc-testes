@@ -50,6 +50,26 @@ def test_login_renderiza_tela_sem_sessao(cliente):
     assert b"Logar" in resposta.data
 
 
+def test_login_redireciona_usuario_autenticado_e_home_renderiza(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta_login = cliente.get("/login", follow_redirects=False)
+    resposta_home = cliente.get("/")
+
+    assert resposta_login.status_code == 302
+    assert resposta_login.location.endswith("/")
+    assert resposta_home.status_code == 200
+    assert "Máquina de Busca" in resposta_home.get_data(as_text=True)
+
+
+def test_criar_usuario_get_renderiza_formulario(cliente):
+    resposta = cliente.get("/criar-usuario")
+
+    assert resposta.status_code == 200
+    assert b"Criar conta" in resposta.data
+
+
 def test_criar_usuario_e_fazer_login(cliente):
     cadastro = cadastrar(cliente)
     login = entrar(cliente)
@@ -179,6 +199,56 @@ def test_perfil_valida_confirmacao_da_nova_senha(cliente):
     assert b"n\xc3\xa3o coincidem" in resposta.data
 
 
+@pytest.mark.parametrize(
+    "dados",
+    [
+        {"nome": "", "usuario": "ana"},
+        {"nome": "Ana", "usuario": ""},
+    ],
+)
+def test_perfil_rejeita_nome_ou_usuario_vazio(cliente, dados):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post(
+        "/perfil",
+        data={**dados, "senha": "", "confirmar_senha": ""},
+    )
+
+    assert resposta.status_code == 400
+    assert "obrigatórios" in resposta.get_data(as_text=True)
+
+
+def test_perfil_rejeita_nova_senha_curta(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post(
+        "/perfil",
+        data={
+            "nome": "Ana",
+            "usuario": "ana",
+            "senha": "123",
+            "confirmar_senha": "123",
+        },
+    )
+
+    assert resposta.status_code == 400
+    assert "pelo menos 6 caracteres" in resposta.get_data(as_text=True)
+
+
+def test_perfil_limpa_sessao_quando_usuario_nao_existe(cliente):
+    with cliente.session_transaction() as sessao:
+        sessao["usuario"] = "removido"
+
+    resposta = cliente.get("/perfil", follow_redirects=False)
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith("/login")
+    with cliente.session_transaction() as sessao:
+        assert "usuario" not in sessao
+
+
 def test_logout_limpa_sessao_e_redireciona(cliente):
     cadastrar(cliente)
     entrar(cliente)
@@ -208,6 +278,13 @@ def test_deletar_perfil_exclui_usuario_e_limpa_sessao(cliente):
     assert novo_login.status_code == 401
 
 
+def test_deletar_perfil_redireciona_sem_sessao(cliente):
+    resposta = cliente.post("/perfil/deletar", follow_redirects=False)
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith("/login")
+
+
 def test_busca_rejeita_mensagem_vazia(cliente):
     cadastrar(cliente)
     entrar(cliente)
@@ -215,6 +292,59 @@ def test_busca_rejeita_mensagem_vazia(cliente):
     resposta = cliente.post("/search", data={"mensagem": "   "})
 
     assert resposta.status_code == 400
+
+
+@pytest.mark.parametrize(
+    "categoria,doc_id",
+    [
+        ("invalida", "001"),
+        ("business", "abc"),
+    ],
+)
+def test_documento_rejeita_categoria_ou_identificador_invalido(
+    cliente, categoria, doc_id
+):
+    resposta = cliente.get(f"/documento/{categoria}/{doc_id}")
+
+    assert resposta.status_code == 404
+
+
+def test_documento_renderiza_conteudo_e_estado_de_artigo_salvo(
+    cliente, monkeypatch, tmp_path
+):
+    pasta_categoria = tmp_path / "business"
+    pasta_categoria.mkdir()
+    (pasta_categoria / "007.txt").write_text("Notícia sobre café", encoding="latin-1")
+    monkeypatch.setattr(app, "caminho_corpus", str(tmp_path))
+
+    resposta_anonima = cliente.get("/documento/business/7")
+    html_anonimo = resposta_anonima.get_data(as_text=True)
+
+    assert resposta_anonima.status_code == 200
+    assert "<h1>Business/007</h1>" in html_anonimo
+    assert "Notícia sobre café" in html_anonimo
+    assert 'id="botao-salvar-artigo"' in html_anonimo
+
+    cadastrar(cliente)
+    entrar(cliente)
+    cliente.post(
+        "/artigos-salvos/salvar",
+        data={"categoria": "business", "doc_id": "007"},
+    )
+
+    resposta_salva = cliente.get("/documento/business/7")
+    html_salvo = resposta_salva.get_data(as_text=True)
+
+    assert resposta_salva.status_code == 200
+    assert 'class="botao-remover-salvo"' in html_salvo
+
+
+def test_documento_inexistente_retorna_404(cliente, monkeypatch, tmp_path):
+    monkeypatch.setattr(app, "caminho_corpus", str(tmp_path))
+
+    resposta = cliente.get("/documento/business/999")
+
+    assert resposta.status_code == 404
     
 # App.py: Beatriz
 def test_obter_servico_artigos_salvos_retorna_padrao_quando_nao_configurado(cliente):
