@@ -164,7 +164,7 @@ class TestSalvarEmDisco:
 
 
 class TestCarregarDeDisco:
-     def test_restaura_estatisticas_e_trie_salvas_incluindo_termos_com_caracteres_especiais(self, tmp_path):
+    def test_restaura_estatisticas_e_trie_salvas_incluindo_termos_com_caracteres_especiais(self, tmp_path):
         corpus_dir = tmp_path / "corpus"
         (corpus_dir / "tech").mkdir(parents=True)
         (corpus_dir / "tech" / "001.txt").write_text("it's c:d data", encoding="latin-1")
