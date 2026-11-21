@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Documento: {{ documento.categoria }}/{{ documento.id }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+<body>
+    <div class = "container">
+        <div class = "item">
+            <button id = "botao-voltar" onclick = "window.history.back()"> 
+                <img src="{{ url_for('static', filename='voltar.png') }}" alt="Voltar">
+            </button>
+        </div>
+    </div>
+
+    <div class="central">
+        <h1>{{ documento.categoria | capitalize }}/{{ documento.id }}</h1> 
+        
+        <hr>
+
+        <div class="conteudo-documento">
+            {{ documento.conteudo }}
+        </div>
+    </div>
+</body>
+</html>
