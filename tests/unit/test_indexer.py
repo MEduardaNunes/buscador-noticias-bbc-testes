@@ -58,23 +58,35 @@ class TestLerDocumentos:
             ler_documentos(str(caminho_inexistente))
 
 class TestConstruirIndice:
-    def test_indexa_documentos_na_trie_e_calcula_estatisticas_para_multiplos_docs(self, tmp_path):
+    def test_indexa_documentos_e_ocorrencias_na_trie(self, tmp_path):
         (tmp_path / "business").mkdir()
         (tmp_path / "sport").mkdir()
         (tmp_path / "business" / "001.txt").write_text("trade trade market", encoding="latin-1")
         (tmp_path / "sport" / "002.txt").write_text("market", encoding="latin-1")
         corpus = Corpus()
-
+        
         corpus.construir_indice(str(tmp_path))
-
+        
         doc1 = (Categoria.business.value, 1)
         doc2 = (Categoria.sport.value, 2)
         assert corpus.todos_documentos == {doc1, doc2}
         assert corpus.trie.busca_palavra("trade") == {doc1: {"frequencia": 2, "primeira_posicao": 0}}
+        assert corpus.trie.busca_palavra("market") == {doc1: {"frequencia": 1, "primeira_posicao": 12}, doc2: {"frequencia": 1, "primeira_posicao": 0},}
+
+    def test_calcula_media_e_desvio_padrao_para_multiplos_documentos(self, tmp_path):
+        (tmp_path / "business").mkdir()
+        (tmp_path / "sport").mkdir()
+        (tmp_path / "business" / "001.txt").write_text("trade trade market", encoding="latin-1")
+        (tmp_path / "sport" / "002.txt").write_text("market", encoding="latin-1")
+        corpus = Corpus()
+        
+        corpus.construir_indice(str(tmp_path))
+        
         assert corpus.estatisticas_corpus["trade"]["media"] == pytest.approx(1.0)
         assert corpus.estatisticas_corpus["trade"]["desvio_padrao"] == pytest.approx(math.sqrt(2))
         assert corpus.estatisticas_corpus["market"]["media"] == pytest.approx(1.0)
         assert corpus.estatisticas_corpus["market"]["desvio_padrao"] == pytest.approx(0.0)
+
 
     def test_define_desvio_padrao_zero_quando_ha_apenas_um_documento(self, tmp_path):
         (tmp_path / "tech").mkdir()
