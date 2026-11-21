@@ -1,5 +1,5 @@
 import pytest
-from src.search import ArvoreParsing, NoParsing
+from src.busca import ArvoreParsing, NoParsing
 
 @pytest.mark.parametrize(
     ("operador", "direita", "esquerda"),

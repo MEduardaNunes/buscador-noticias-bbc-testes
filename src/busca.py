@@ -25,7 +25,7 @@ import traceback
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.classes.trie_compacta import TrieCompacta
-from src.utils import normaliza_query
+from src.utilitarios import normaliza_query
 
 
 class NoParsing:

@@ -1,6 +1,6 @@
-from src.models import Categoria
+from src.modelos import Categoria
 from collections import namedtuple
-from src.utils import processar_texto, mergesort
+from src.utilitarios import processar_texto, mergesort
 from src.snippet import _gerar_snippet_formatado
 
 ResultadoItem = namedtuple('ResultadoItem', [

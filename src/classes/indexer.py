@@ -1,6 +1,6 @@
 from src.classes.trie_compacta import TrieCompacta, NoTrie
-from src.utils import processar_texto
-from src.models import Documento, Categoria
+from src.utilitarios import processar_texto
+from src.modelos import Documento, Categoria
 import os
 import math
 import re

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Callable, Protocol
 
-from src.models import Categoria
+from src.modelos import Categoria
 
 class RepositorioArtigosSalvos(Protocol):
     """Contrato de persistência para permitir substituição por Fakes/Stubs em testes."""

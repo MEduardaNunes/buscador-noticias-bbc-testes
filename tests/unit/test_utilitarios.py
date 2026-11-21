@@ -1,4 +1,4 @@
-from src.utils import normaliza_query, processar_texto
+from src.utilitarios import normaliza_query, processar_texto
 import pytest
 
 @pytest.mark.parametrize(
