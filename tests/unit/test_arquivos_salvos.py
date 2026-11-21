@@ -50,3 +50,11 @@ class RepositorioArtigosSalvosFake:
             for r in reversed(self._registros)
             if r["usuario"] == usuario
         ]
+
+    def existe(self, usuario: str, categoria: str, doc_id: str) -> bool:
+        return any(
+            r["usuario"] == usuario
+            and r["categoria"] == categoria
+            and r["doc_id"] == doc_id
+            for r in self._registros
+        )
