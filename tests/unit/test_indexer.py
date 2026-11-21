@@ -196,3 +196,23 @@ class TestCarregarDeDisco:
         sucesso = corpus.carregar_de_disco(str(arquivo_invalido))
 
         assert sucesso is False
+
+    def test_ignora_linhas_malformadas_e_carrega_registros_validos(self, tmp_path):
+        arquivo = tmp_path / "parcial.dat"
+        arquivo.write_text(
+            "---ESTATISTICAS---\n"
+            "valido:1.5,0.5\n"
+            "invalido_sem_dois_pontos\n"
+            "invalido_float:abc,1.0\n"
+            "---TRIE---\n"
+            "('',{})\n"
+            "  ('valido',{(1, 1):{'frequencia':1, 'primeira_posicao':0}})\n"
+            "  linha_quebrada_na_trie\n",
+            encoding="utf-8",
+        )
+        corpus = Corpus()
+        sucesso = corpus.carregar_de_disco(str(arquivo))
+
+        assert sucesso is True
+        assert corpus.estatisticas_corpus == {"valido": {"media": 1.5, "desvio_padrao": 0.5}}
+        assert corpus.trie.busca_palavra("valido") == {(1, 1): {"frequencia": 1, "primeira_posicao": 0}}
