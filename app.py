@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from src.artigos_salvos import RepositorioArtigosSalvosSQLite, ServicoArtigosSalvos
 from src.models import Categoria
+from src.classes.indexer import Corpus
+import traceback
 
 load_dotenv()
 app = Flask(__name__)
@@ -15,6 +17,57 @@ gerenciador_de_busca = None
 caminho_corpus = None
 
 DATABASE = os.getenv('DATABASE_PATH', 'usuarios.db')
+
+
+def inicializar_indice():
+    """
+    Carrega o índice do disco ou o constrói se não existir.
+    Inicializa as variáveis globais que a aplicação usará.
+    """
+    global corpus_index, caminho_corpus, mapa_categorias_reverso, gerenciador_de_busca
+    caminho_indice_salvo = "data-bbc/indice_trie_estatisticas.dat" 
+    caminho_relativo = './data-bbc'
+    
+    # Define o caminho absoluto para o corpus
+    caminho_corpus = os.path.abspath(os.path.join(os.path.dirname(__file__), caminho_relativo))
+
+    corpus_index = Corpus()
+    indice_carregado_ou_construido = False
+    
+    # Tenta carregar o índice do disco
+    if os.path.exists(caminho_indice_salvo) and corpus_index.carregar_de_disco(caminho_indice_salvo):
+        print("O índice foi carregado do arquivo")
+        indice_carregado_ou_construido = True
+    else:
+        # Se falhar constrói o índice
+        if not os.path.exists(caminho_corpus):
+            print(f"ERRO: Diretório do corpus não encontrado em '{caminho_corpus}'")
+            return
+
+        corpus_index.construir_indice(caminho_corpus)
+        
+        if corpus_index.estatisticas_corpus:
+            print("\nO índice foi criado e carregado na memória") 
+            os.makedirs(os.path.dirname(caminho_indice_salvo), exist_ok=True)
+            corpus_index.salvar_em_disco(caminho_indice_salvo)
+            indice_carregado_ou_construido = True
+        else:
+            print("\nERRO: O índice não pôde ser criado. Verifique os logs") 
+
+    # Se o índice estiver pronto inicializa o Gerenciador de Busca
+    if indice_carregado_ou_construido:
+        try:
+            todos_documentos = corpus_index.todos_documentos 
+            
+            gerenciador_de_busca = GerenciadorDeBusca(
+                trie_index=corpus_index.trie,
+                todos_documentos=todos_documentos,
+                caminho_corpus=caminho_corpus,
+                estatisticas_corpus=corpus_index.estatisticas_corpus
+            )      
+        except Exception as e:
+            print(f"[ERRO] Falha ao criar GerenciadorDeBusca: {e}")
+            traceback.print_exc()
 
 
 def get_db():
