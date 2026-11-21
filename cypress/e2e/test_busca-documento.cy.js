@@ -1,6 +1,21 @@
 describe('Busca e visualização de documento', () => {
+  const usuario = `usuario_busca_${Date.now()}`;
+  const senha = 'senha_segura_123';
+
+  beforeEach(() => {
+    cy.deslogar();
+  });
+
+  afterEach(() => {
+    cy.excluirConta({ usuario, senha });
+    cy.deslogar();
+  });
+
   it('deve buscar um termo, abrir o primeiro documento retornado e registrar no histórico', () => {
     const termoBusca = 'music';
+
+    cy.criarConta({ nome: 'Usuário Teste E2E', usuario, senha });
+    cy.logar({ usuario, senha });
     cy.visit('/');
 
     // realiza a busca pela interface

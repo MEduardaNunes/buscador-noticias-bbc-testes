@@ -4,66 +4,16 @@ describe('Fluxo de conta', () => {
     const senha = '123456';
     const contasCriadas = [{ usuario, senha }];
 
-    const criarConta = (usuarioConta = usuario, senhaConta = senha) => {
-        cy.request({
-            method: 'POST',
-            url: '/criar-usuario',
-            form: true,
-            body: {
-                nome,
-                usuario: usuarioConta,
-                senha: senhaConta,
-                confirmar_senha: senhaConta,
-            },
-        });
-    };
-
-    const logar = (usuarioConta = usuario, senhaConta = senha) => {
-        cy.request({
-            method: 'POST',
-            url: '/login',
-            form: true,
-            body: {
-                usuario: usuarioConta,
-                senha: senhaConta,
-            },
-        });
-    };
-
-    const excluirConta = () => {
-        cy.request({
-            method: 'POST',
-            url: '/perfil/deletar',
-            form: true,
-        });
-    };
-
     beforeEach(() => {
-        cy.request({
-            method: 'POST',
-            url: '/logout',
-            failOnStatusCode: false,
-        });
+        cy.deslogar();
         cy.visit('/');
     });
 
     afterEach(() => {
         contasCriadas.forEach((conta) => {
-            cy.request({
-                method: 'POST',
-                url: '/login',
-                form: true,
-                body: {
-                    usuario: conta.usuario,
-                    senha: conta.senha,
-                },
-                failOnStatusCode: false,
-            }).then((resposta) => {
-                if (resposta.status !== 401) {
-                    excluirConta();
-                }
-            });
+            cy.excluirConta(conta);
         });
+        cy.deslogar();
     });
 
     //TO-DO: setup de deslogar sessão ativa início dos testes
@@ -82,7 +32,7 @@ describe('Fluxo de conta', () => {
     });
 
     it('CT02: logar na conta', () => {
-        criarConta();
+        cy.criarConta({ nome, usuario, senha });
 
         cy.visit('/login');
         cy.contains('Logar').should('be.visible');
@@ -96,8 +46,8 @@ describe('Fluxo de conta', () => {
     });
 
     it('CT03: alterar dados da conta', () => {
-        criarConta();
-        logar();
+        cy.criarConta({ nome, usuario, senha });
+        cy.logar({ usuario, senha });
 
         const novoUsuario = `alterado_${Date.now()}`;
         const novaSenha = '654321';
@@ -114,8 +64,8 @@ describe('Fluxo de conta', () => {
     });
 
     it('CT04: deslogar da conta', () => {
-        criarConta();
-        logar();
+        cy.criarConta({ nome, usuario, senha });
+        cy.logar({ usuario, senha });
 
         cy.visit('/');
         cy.get('#logout').click();

@@ -1,23 +1,24 @@
 describe('Gerenciamento de artigos salvos', () => {
+  const usuario = `usuario_e2e_${Date.now()}`;
+  const senha = 'senha_segura_123';
+
+  beforeEach(() => {
+    cy.deslogar();
+  });
+
+  afterEach(() => {
+    cy.excluirConta({ usuario, senha });
+    cy.deslogar();
+  });
+
   it('deve permitir salvar um artigo a partir da página do documento, visualizá-lo na lista de salvos e removê-lo', () => {
-    const sufixo = Date.now();
-    const usuario = `usuario_e2e_${sufixo}`;
-    const senha = 'senha_segura_123';
     const categoria = 'business';
     const docId = '001';
     const idCompleto = `${categoria}/${docId}`;
 
-    cy.visit('/criar-usuario');
-    cy.get('#nome').type('Usuário Teste E2E');
-    cy.get('#usuario').type(usuario);
-    cy.get('#senha').type(senha);
-    cy.get('#confirmar_senha').type(senha);
-    cy.get('#botao-busca').click();
-
-    cy.url().should('include', '/login');
-    cy.get('#usuario').type(usuario);
-    cy.get('#senha').type(senha);
-    cy.get('#botao-busca').click();
+    cy.criarConta({ nome: 'Usuário Teste E2E', usuario, senha });
+    cy.logar({ usuario, senha });
+    cy.visit('/');
     cy.url().should('eq', `${Cypress.config('baseUrl')}/`);
 
     cy.visit(`/documento/${categoria}/${docId}`);

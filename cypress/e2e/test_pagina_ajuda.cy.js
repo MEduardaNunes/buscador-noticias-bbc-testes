@@ -1,5 +1,21 @@
 describe('Página de ajuda', () => {
+  const usuario = `usuario_ajuda_${Date.now()}`;
+  const senha = 'senha_segura_123';
+
+  beforeEach(() => {
+    cy.deslogar();
+  });
+
+  afterEach(() => {
+    cy.excluirConta({ usuario, senha });
+    cy.deslogar();
+  });
+
   it('deve acessar a página de ajuda pela interface, exibir o conteúdo e retornar à página anterior', () => {
+    cy.criarConta({ nome: 'Usuário Teste E2E', usuario, senha });
+    cy.logar({ usuario, senha });
+    cy.visit('/');
+
     cy.visit('/historico');
 
     // acessa a página de ajuda pelo botão da interface
