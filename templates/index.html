@@ -19,10 +19,11 @@
 
         <div class="item">
             <a href="{{ url_for('artigos_salvos') }}">
-                <button id="salvos" aria-label="Artigos salvos" title="Artigos salvos">★</button>
-            </a>
-        </div>
-
+               <button id="salvos" aria-label="Artigos salvos" title="Artigos salvos">
+                   <img src="{{ url_for('static', filename='salvos.png') }}" alt="Artigos salvos">
+               </button>
+           </a>
+       </div>
 
         <div class = "item">
             <a href = "{{ url_for('historico') }}">
