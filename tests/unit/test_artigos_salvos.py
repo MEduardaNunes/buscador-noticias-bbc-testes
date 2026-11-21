@@ -76,3 +76,23 @@ class TestServicoArtigosSalvos:
                 "salvo_em": "2026-11-21T12:00:00+00:00",
             }
         ]
+    def test_salvar_artigo_duplicado_retorna_false(self):
+        repo = RepositorioArtigosSalvosFake()
+        instante_fixo = datetime(2026, 11, 21, 12, 0, 0, tzinfo=timezone.utc)
+        servico = ServicoArtigosSalvos(repositorio=repo, relogio=lambda: instante_fixo)
+        servico.salvar_artigo("ana", "sport", "001")
+
+        inserido_novamente = servico.salvar_artigo("ana", "SPORT", "001")
+
+        assert inserido_novamente is False
+        assert len(servico.listar_artigos("ana")) == 1
+
+    def test_remover_artigo_existente_retorna_true_e_remove_registro(self):
+        repo = RepositorioArtigosSalvosFake()
+        servico = ServicoArtigosSalvos(repositorio=repo)
+        servico.salvar_artigo("ana", "business", "010")
+        
+        removido = servico.remover_artigo("ana", "business", "010")
+
+        assert removido is True
+        assert servico.artigo_esta_salvo("ana", "business", "010") is False
