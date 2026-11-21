@@ -312,4 +312,36 @@ def test_artigos_salvos_isola_registros_entre_usuarios(cliente):
     assert resposta.status_code == 200
     assert "tech/001" not in resposta.get_data(as_text=True)
 
+def test_salvar_artigo_respeita_parametro_next(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+    destino = "/documento/business/001"
+
+    resposta = cliente.post(
+        "/artigos-salvos/salvar",
+        data={"categoria": "business", "doc_id": "001", "next": destino},
+        follow_redirects=False,
+    )
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith(destino)
+
+
+def test_remover_artigo_respeita_parametro_next(cliente):
+    cadastrar(cliente)
+    entrar(cliente)
+    destino = "/documento/business/001"
+    cliente.post("/artigos-salvos/salvar", data={"categoria": "business", "doc_id": "001"})
+
+    resposta = cliente.post(
+        "/artigos-salvos/remover",
+        data={"categoria": "business", "doc_id": "001", "next": destino},
+        follow_redirects=False,
+    )
+
+    assert resposta.status_code == 302
+    assert resposta.location.endswith(destino)
+
+
+
 # -----------
