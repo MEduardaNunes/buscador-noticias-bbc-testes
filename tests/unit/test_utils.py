@@ -1,4 +1,4 @@
-from src.utils import normaliza_query
+from src.utils import normaliza_query, processar_texto
 import pytest
 
 @pytest.mark.parametrize(
@@ -28,3 +28,11 @@ def test_normaliza_query_input_validos(query, esperado):
 def test_normaliza_query_input_tipo_invalido(query):
     with pytest.raises(TypeError):
         _ = normaliza_query(query)
+
+class TestProcessarTexto:
+    def test_extrai_palavras_e_numeros_em_minusculas_com_indices_originais(self):
+        texto = "Python 312 TESTE"
+
+        resultado = processar_texto(texto)
+
+        assert resultado == [("python", 0), ("312", 7), ("teste", 11)]
