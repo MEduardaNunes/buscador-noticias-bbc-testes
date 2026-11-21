@@ -57,3 +57,9 @@ class TestProcessarTexto:
 
         assert resultado == [("it's", 0), ("well-known", 5)]
 
+    def test_extrai_simbolos_indexaveis_como_tokens_individuais(self):
+        texto = "100% $50"
+
+        resultado = processar_texto(texto)
+
+        assert resultado == [("100", 0), ("%", 3), ("$", 5), ("50", 6)]
