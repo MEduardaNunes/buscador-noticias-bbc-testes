@@ -342,6 +342,23 @@ def test_remover_artigo_respeita_parametro_next(cliente):
     assert resposta.status_code == 302
     assert resposta.location.endswith(destino)
 
+@pytest.mark.parametrize(
+    "rota,categoria,doc_id",
+    [
+        ("/artigos-salvos/salvar", "invalida", "001"),
+        ("/artigos-salvos/salvar", "tech", "abc"),
+        ("/artigos-salvos/remover", "invalida", "001"),
+        ("/artigos-salvos/remover", "tech", ""),
+    ],
+)
+def test_salvar_ou_remover_artigo_com_dados_invalidos_retorna_400(cliente, rota, categoria, doc_id):
+    cadastrar(cliente)
+    entrar(cliente)
+
+    resposta = cliente.post(rota, data={"categoria": categoria, "doc_id": doc_id})
+
+    assert resposta.status_code == 400
+
 
 
 # -----------
