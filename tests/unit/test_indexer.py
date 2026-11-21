@@ -136,3 +136,18 @@ class TestParseLinhaTrie:
 
         with pytest.raises(ValueError):
             corpus.parse_linha_trie("linha_sem_formato_valido")
+class TestSalvarEmDisco:
+    def test_cria_arquivo_com_blocos_de_estatisticas_e_trie(self, tmp_path):
+        corpus_dir = tmp_path / "corpus"
+        (corpus_dir / "business").mkdir(parents=True)
+        (corpus_dir / "business" / "001.txt").write_text("profit", encoding="latin-1")
+        arquivo_saida = tmp_path / "indice.dat"
+
+        corpus = Corpus()
+        corpus.construir_indice(str(corpus_dir))
+        corpus.salvar_em_disco(str(arquivo_saida))
+        
+        conteudo = arquivo_saida.read_text(encoding="utf-8")
+        assert "---ESTATISTICAS---\n" in conteudo
+        assert "---TRIE---\n" in conteudo
+        assert "profit:1.0,0\n" in conteudo
