@@ -199,3 +199,13 @@ class TestRepositorioArtigosSalvosSQLite:
                 "salvo_em": "2026-11-21T10:00:00+00:00",
             },
         ]
+        
+    def test_remover_artigo_no_sqlite(self, repositorio):
+        repositorio.salvar("ana", "politics", "005", "2026-11-21T10:00:00+00:00")
+
+        removido_primeira_vez = repositorio.remover("ana", "politics", "005")
+        removido_segunda_vez = repositorio.remover("ana", "politics", "005")
+
+        assert removido_primeira_vez is True
+        assert removido_segunda_vez is False
+        assert repositorio.existe("ana", "politics", "005") is False
