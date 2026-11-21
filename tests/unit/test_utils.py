@@ -50,16 +50,14 @@ class TestProcessarTexto:
 
         assert resultado == []
 
-    def test_mantem_caracteres_internos_como_parte_da_palavra(self):
-        texto = "It's well-known"
-
+    def test_extrai_simbolos_indexaveis_isolados_como_tokens_individuais(self):
+        texto = "a % & b"
         resultado = processar_texto(texto)
-
-        assert resultado == [("it's", 0), ("well-known", 5)]
-
-    def test_extrai_simbolos_indexaveis_como_tokens_individuais(self):
-        texto = "100% $50"
-
+        
+        assert resultado == [("a", 0), ("%", 2), ("&", 4), ("b", 6)]
+        
+    def test_ignora_caracteres_nao_indexaveis_preservando_indices(self):
+        texto = "(teste) $ fim"
         resultado = processar_texto(texto)
-
-        assert resultado == [("100", 0), ("%", 3), ("$", 5), ("50", 6)]
+        
+        assert resultado == [("teste", 1), ("fim", 10)]
