@@ -1,4 +1,4 @@
-from src.utilitarios import normaliza_query, processar_texto
+from src.utilitarios import normaliza_query, processar_texto, mergesort
 import pytest
 
 @pytest.mark.parametrize(
@@ -61,3 +61,12 @@ class TestProcessarTexto:
         resultado = processar_texto(texto)
         
         assert resultado == [("teste", 1), ("fim", 10)]
+
+
+class TestMergesort:
+    def test_ordena_em_ordem_decrescente_pela_chave(self):
+        palavras = ["oi", "economia", "bbc", "a"]
+
+        resultado = mergesort(palavras, chave=len)
+
+        assert resultado == ["economia", "bbc", "oi", "a"]
