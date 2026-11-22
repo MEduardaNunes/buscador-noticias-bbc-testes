@@ -195,3 +195,8 @@ class ServicoComentarios:
 
         self._repositorio.remover(comentario_id)
         return comentario
+
+    def excluir_comentarios_do_usuario(self, usuario: str) -> int:
+        """Exclui todos os comentários do usuário (usado ao excluir a conta). Retorna quantos foram removidos."""
+        usuario_limpo = self._validar_usuario(usuario)
+        return self._repositorio.remover_por_usuario(usuario_limpo)
