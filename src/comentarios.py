@@ -87,3 +87,11 @@ class RepositorioComentariosSQLite:
             ).fetchone()
 
         return self._para_dict(registro) if registro is not None else None
+
+    def remover(self, comentario_id: int) -> bool:
+        with self._conexao_factory() as conexao:
+            cursor = conexao.execute(
+                "DELETE FROM comentarios WHERE id = ?",
+                (comentario_id,),
+            )
+            return cursor.rowcount > 0
