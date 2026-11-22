@@ -115,3 +115,11 @@ class TestServicoComentarios:
         servico.excluir_comentario("ana", comentario_id)
 
         assert servico.listar_comentarios("business", "001") == []
+
+    def test_impede_exclusao_de_comentario_de_outro_usuario(self, servico):
+        comentario_id = servico.comentar("ana", "business", "001", "Comentário da Ana")
+
+        with pytest.raises(PermissaoNegadaError):
+            servico.excluir_comentario("bia", comentario_id)
+
+        assert [c["texto"] for c in servico.listar_comentarios("business", "001")] == ["Comentário da Ana"]
