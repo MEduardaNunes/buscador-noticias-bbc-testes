@@ -341,3 +341,33 @@ class GerenciadorDeBusca:
             return False
 
         return not self._tem_no_invalido(arvore)
+
+    def _processa_arvore_parsing(self, no: NoParsing):
+        """
+        Processa uma árvore de parsing recursivamente, aplicando operações booleanas sobre os
+        termos dos documentos armazenados na Trie Compacta.
+
+        Parâmetros:
+            no (NoParsing): o nó que será processado.
+
+        Retorna:
+            Um set com todos os documentos que satisfazem a consulta.
+        """
+        if no is None:
+            return set()
+
+        if no.operador == "AND":
+            return (self._processa_arvore_parsing(no.esquerda)
+                    & self._processa_arvore_parsing(no.direita))
+
+        elif no.operador == "OR":
+            return (self._processa_arvore_parsing(no.esquerda)
+                    | self._processa_arvore_parsing(no.direita))
+
+        elif no.operador == "NOT":
+            return self.todos_documentos - self._processa_arvore_parsing(no.direita)
+
+        else:
+            palavra = no.operador
+            documentos_da_palavra = self.trie.busca_palavra(palavra)
+            return set(documentos_da_palavra.keys()) if documentos_da_palavra else set()
