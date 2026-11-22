@@ -411,6 +411,22 @@ def exibir_documento(categoria, id_documento):
     
     return render_template('exibir_documento.html', documento=documento, artigo_salvo=artigo_salvo,)
 
+
+@app.route('/documento/<categoria>/<id_documento>/comentarios', methods=['POST'])
+def comentar_documento(categoria, id_documento):
+    """Publica um comentário do usuário autenticado no documento."""
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    texto = request.form.get('texto', '')
+    try:
+        obter_servico_comentarios().comentar(session['usuario'], categoria, id_documento, texto)
+        flash('Comentário publicado.', 'sucesso')
+    except ValueError as erro:
+        flash(str(erro), 'erro')
+
+    return redirect(url_for('exibir_documento', categoria=categoria, id_documento=id_documento, _anchor='comentarios'))
+
 if __name__ == '__main__':
     inicializar_indice()
 
