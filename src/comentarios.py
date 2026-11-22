@@ -49,3 +49,28 @@ class RepositorioComentariosSQLite:
                 (usuario, categoria, doc_id, texto, criado_em),
             )
             return cursor.lastrowid
+
+    @staticmethod
+    def _para_dict(registro) -> dict:
+        return {
+            "id": registro["id"],
+            "usuario": registro["usuario"],
+            "categoria": registro["categoria"],
+            "doc_id": registro["doc_id"],
+            "texto": registro["texto"],
+            "criado_em": registro["criado_em"],
+        }
+
+    def listar_por_documento(self, categoria: str, doc_id: str) -> list[dict]:
+        with self._conexao_factory() as conexao:
+            registros = conexao.execute(
+                """
+                SELECT id, usuario, categoria, doc_id, texto, criado_em
+                FROM comentarios
+                WHERE categoria = ? AND doc_id = ?
+                ORDER BY id ASC
+                """,
+                (categoria, doc_id),
+            ).fetchall()
+
+        return [self._para_dict(r) for r in registros]
