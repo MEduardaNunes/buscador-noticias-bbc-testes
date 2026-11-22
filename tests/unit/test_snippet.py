@@ -24,3 +24,10 @@ class TestGerarSnippetFormatado:
         snippet = gerar_snippet_formatado(doc_id, "economy", 101, str(caminho_corpus), MAPA_CATEGORIAS, ["economy"])
 
         assert snippet == "... " + "a" * 79 + " <b>economy</b> " + "b" * 79 + " ..."
+
+    def test_omite_reticencias_quando_documento_cabe_inteiro_no_snippet(self, caminho_corpus):
+        doc_id = criar_documento(caminho_corpus, 1, "Economy grows.")
+
+        snippet = gerar_snippet_formatado(doc_id, "economy", 0, str(caminho_corpus), MAPA_CATEGORIAS, ["economy"])
+
+        assert snippet == "<b>Economy</b> grows."
