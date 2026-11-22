@@ -42,6 +42,20 @@
         <section id="comentarios" class="comentarios">
             <h2>Comentários ({{ comentarios | length }})</h2>
 
+            {% if session.get('usuario') %}
+                <form method="POST" class="form-comentario"
+                      action="{{ url_for('comentar_documento', categoria=documento.categoria, id_documento=documento.id) }}">
+                    <label for="texto-comentario">Deixe seu comentário</label>
+                    <textarea id="texto-comentario" name="texto" rows="3" maxlength="500"
+                              placeholder="O que você achou desta notícia?" required></textarea>
+                    <button type="submit" id="botao-comentar">Comentar</button>
+                </form>
+            {% else %}
+                <p class="aviso-login-comentario">
+                    <a href="{{ url_for('login') }}">Entre na sua conta</a> para comentar.
+                </p>
+            {% endif %}
+
             {% if comentarios %}
                 <ul class="lista-comentarios">
                     {% for comentario in comentarios %}
