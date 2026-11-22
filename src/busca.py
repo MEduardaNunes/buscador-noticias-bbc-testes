@@ -26,6 +26,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.classes.trie_compacta import TrieCompacta
 from src.utilitarios import normaliza_query
+from src.modelos import Categoria
 
 
 class NoParsing:
@@ -291,3 +292,14 @@ class ArvoreParsing:
             raise ValueError("ERRO: tokens não consumidos")
 
         return self.raiz
+
+
+class GerenciadorDeBusca:
+    """Coordena a consulta de forma completa (parsing, busca booleana, cálculo de relevância e formatação)."""
+
+    def __init__(self, trie_index: TrieCompacta, todos_documentos: set, caminho_corpus: str, estatisticas_corpus: dict):
+        self.trie = trie_index # Referência ao índice invertido
+        self.todos_documentos = todos_documentos # Todos os ids de documentos
+        self.caminho_corpus = caminho_corpus # Caminho dos dados
+        self.estatisticas_corpus = estatisticas_corpus # Dicionário com estatísticas para o cálculo do z-score
+        self.mapa_categorias = {c.value: c.name for c in Categoria} # Usado para formatar o doc_id na saída
