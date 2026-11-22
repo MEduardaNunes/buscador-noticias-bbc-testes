@@ -53,3 +53,8 @@ class TestDestacarTermosNoSnippet:
         destacado = destacar_termos_no_snippet("Oil prices and OIL demand", ["oil", "demand"])
 
         assert destacado == "<b>Oil</b> prices and <b>OIL</b> <b>demand</b>"
+
+    def test_nao_aninha_destaque_quando_um_termo_contem_outro(self):
+        destacado = destacar_termos_no_snippet("growth of 40% and 5%", ["%", "40%"])
+
+        assert destacado == "growth of <b>40%</b> and 5<b>%</b>"
