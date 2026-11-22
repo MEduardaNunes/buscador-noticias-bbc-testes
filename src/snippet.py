@@ -147,3 +147,39 @@ def _obter_indice_termo(conteudo_documento, termo_em_foco, indice_caractere_inic
                 print(f"[Aviso Snippet] Termo '{termo_em_foco}' não encontrado no conteúdo.")
                 return -1  # Termo não encontrado
     return indice_caractere_inicial
+
+
+def gerar_snippet_formatado(doc_id, termo_em_foco, indice_caractere_inicial, caminho_corpus, mapa_categorias, termos_validos):
+    """
+    Gera um snippet formatado a partir de um documento, destacando o termo de foco e todos os outros termos válidos da consulta.
+
+    Parâmetros:
+    - doc_id (tuple): Tupla contendo o id do documento (categoria_id, numero_id).
+    - termo_em_foco (str): O termo da consulta que será o foco central do snippet.
+    - indice_caractere_inicial (int): O índice inicial onde o termo de foco começa no conteúdo.
+    - caminho_corpus (str): Caminho do diretório onde os documentos estão armazenados.
+    - mapa_categorias (dict): Dicionário que mapeia categorias numéricas para seus nomes.
+    - termos_validos (list): Lista de termos válidos da consulta que precisam ser destacados.
+
+    Retorna:
+    - str: O snippet formatado com os termos destacados, incluindo prefixo "..." e sufixo "..." quando necessário.
+    """
+    conteudo_documento = _ler_conteudo_documento(doc_id, caminho_corpus, mapa_categorias)
+
+    indice_caractere_inicial = _obter_indice_termo(conteudo_documento, termo_em_foco, indice_caractere_inicial)
+
+    if indice_caractere_inicial == -1:
+        return "[Termo de foco não encontrado no documento]"
+
+    # Calcula limites, extrai e destaca o termo
+    tamanho_termo_em_foco = len(termo_em_foco)
+    inicio_snippet, fim_snippet = _calcular_limites_snippet(len(conteudo_documento), indice_caractere_inicial, tamanho_termo_em_foco)
+
+    texto_snippet = conteudo_documento[inicio_snippet:fim_snippet]
+
+    snippet_destacado = destacar_termos_no_snippet(texto_snippet, termos_validos)
+
+    prefixo = "... " if inicio_snippet > 0 else ""
+    sufixo = " ..." if fim_snippet < len(conteudo_documento) else ""
+
+    return prefixo + snippet_destacado + sufixo
