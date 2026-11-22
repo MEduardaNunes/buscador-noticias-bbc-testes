@@ -66,3 +66,10 @@ class TestServicoComentarios:
     def test_rejeita_comentario_vazio(self, servico, texto):
         with pytest.raises(ValueError):
             servico.comentar("ana", "business", "001", texto)
+
+    def test_aceita_comentario_com_tamanho_maximo(self, servico):
+        texto_no_limite = "a" * TAMANHO_MAXIMO_COMENTARIO
+
+        servico.comentar("ana", "business", "001", texto_no_limite)
+
+        assert servico.listar_comentarios("business", "001")[0]["texto"] == texto_no_limite
