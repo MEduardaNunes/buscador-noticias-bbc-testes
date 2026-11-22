@@ -46,3 +46,10 @@ class TestGerarSnippetFormatado:
         snippet = gerar_snippet_formatado(doc_id, "football", 0, str(caminho_corpus), MAPA_CATEGORIAS, ["football"])
 
         assert snippet == "[Termo de foco não encontrado no documento]"
+
+
+class TestDestacarTermosNoSnippet:
+    def test_destaca_todas_as_ocorrencias_ignorando_maiusculas(self):
+        destacado = destacar_termos_no_snippet("Oil prices and OIL demand", ["oil", "demand"])
+
+        assert destacado == "<b>Oil</b> prices and <b>OIL</b> <b>demand</b>"
