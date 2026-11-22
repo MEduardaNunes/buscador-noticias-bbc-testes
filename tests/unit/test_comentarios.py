@@ -151,3 +151,13 @@ class TestRepositorioComentariosSQLite:
         comentarios = repositorio.listar_por_documento("business", "001")
 
         assert [(c["usuario"], c["texto"]) for c in comentarios] == [("ana", "Primeiro"), ("duda", "Segundo")]
+
+    def test_remove_comentario_e_informa_quando_ele_nao_existe(self, repositorio):
+        comentario_id = repositorio.adicionar("ana", "business", "001", "Texto", "2026-11-22T10:00:00+00:00")
+
+        primeira_remocao = repositorio.remover(comentario_id)
+        segunda_remocao = repositorio.remover(comentario_id)
+
+        assert primeira_remocao is True
+        assert segunda_remocao is False
+        assert repositorio.buscar_por_id(comentario_id) is None
