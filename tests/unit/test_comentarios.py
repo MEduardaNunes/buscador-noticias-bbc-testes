@@ -123,3 +123,7 @@ class TestServicoComentarios:
             servico.excluir_comentario("bia", comentario_id)
 
         assert [c["texto"] for c in servico.listar_comentarios("business", "001")] == ["Comentário da Ana"]
+
+    def test_excluir_comentario_inexistente_lanca_erro(self, servico):
+        with pytest.raises(ComentarioNaoEncontradoError):
+            servico.excluir_comentario("ana", 999)
