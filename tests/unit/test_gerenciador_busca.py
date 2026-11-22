@@ -42,3 +42,8 @@ class TestExecutarBusca:
         resultados = gerenciador.executar_busca("prices AND NOT oil")
 
         assert ids_retornados(resultados) == {"business/003"}
+
+    def test_ignora_maiusculas_nos_termos_da_consulta(self, gerenciador):
+        resultados = gerenciador.executar_busca("GAS")
+
+        assert ids_retornados(resultados) == {"business/003"}
