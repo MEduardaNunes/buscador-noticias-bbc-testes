@@ -82,3 +82,15 @@ def test_visitante_ve_comentarios_mas_nao_ve_formulario_nem_botao_de_excluir(cli
     assert "Comentário da Ana" in html
     assert 'id="texto-comentario"' not in html
     assert "botao-excluir-comentario" not in html
+
+
+def test_autor_exclui_o_proprio_comentario_pela_pagina(cliente):
+    cadastrar_e_entrar(cliente)
+    cliente.post(URL_COMENTAR, data={"texto": "Vou apagar"})
+    comentario_id = comentarios_do_documento()[0]["id"]
+
+    resposta = cliente.post(f"/comentarios/{comentario_id}/excluir", follow_redirects=True)
+
+    assert resposta.status_code == 200
+    assert "Comentário excluído." in resposta.get_data(as_text=True)
+    assert comentarios_do_documento() == []
