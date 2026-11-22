@@ -39,3 +39,10 @@ class TestGerarSnippetFormatado:
         snippet = gerar_snippet_formatado(doc_id, "economy", indice_incorreto, str(caminho_corpus), MAPA_CATEGORIAS, ["economy"])
 
         assert snippet == "The <b>economy</b> is growing"
+
+    def test_informa_quando_termo_nao_esta_no_documento(self, caminho_corpus):
+        doc_id = criar_documento(caminho_corpus, 1, "The economy is growing")
+
+        snippet = gerar_snippet_formatado(doc_id, "football", 0, str(caminho_corpus), MAPA_CATEGORIAS, ["football"])
+
+        assert snippet == "[Termo de foco não encontrado no documento]"
