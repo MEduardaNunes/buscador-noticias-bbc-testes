@@ -76,3 +76,10 @@ class TestMergesort:
         resultado = mergesort(lista, chave=lambda item: item)
 
         assert resultado == lista
+
+    def test_preserva_ordem_original_de_itens_com_mesma_chave(self):
+        itens = [("doc1", 0.5), ("doc2", 0.9), ("doc3", 0.5), ("doc4", 0.5)]
+
+        resultado = mergesort(itens, chave=lambda item: item[1])
+
+        assert resultado == [("doc2", 0.9), ("doc1", 0.5), ("doc3", 0.5), ("doc4", 0.5)]
