@@ -45,6 +45,11 @@ class RepositorioComentariosFake:
         self._comentarios = [c for c in self._comentarios if c["id"] != comentario_id]
         return len(self._comentarios) < tamanho_antes
 
+    def remover_por_usuario(self, usuario) -> int:
+        tamanho_antes = len(self._comentarios)
+        self._comentarios = [c for c in self._comentarios if c["usuario"] != usuario]
+        return tamanho_antes - len(self._comentarios)
+
 
 @pytest.fixture
 def servico():
@@ -127,6 +132,17 @@ class TestServicoComentarios:
     def test_excluir_comentario_inexistente_lanca_erro(self, servico):
         with pytest.raises(ComentarioNaoEncontradoError):
             servico.excluir_comentario("ana", 999)
+
+    def test_excluir_comentarios_do_usuario_remove_apenas_os_dele(self, servico):
+        servico.comentar("ana", "business", "001", "Da Ana")
+        servico.comentar("bia", "business", "001", "Da Bia")
+        servico.comentar("ana", "tech", "002", "Outro da Ana")
+
+        removidos = servico.excluir_comentarios_do_usuario("ana")
+
+        assert removidos == 2
+        assert [c["usuario"] for c in servico.listar_comentarios("business", "001")] == ["bia"]
+        assert servico.listar_comentarios("tech", "002") == []
 
 
 class TestRepositorioComentariosSQLite:
