@@ -107,3 +107,11 @@ def test_excluir_comentario_de_outro_usuario_retorna_403(cliente):
 
     assert resposta.status_code == 403
     assert len(comentarios_do_documento()) == 1
+
+
+def test_excluir_comentario_inexistente_retorna_404(cliente):
+    cadastrar_e_entrar(cliente)
+
+    resposta = cliente.post("/comentarios/999/excluir")
+
+    assert resposta.status_code == 404
