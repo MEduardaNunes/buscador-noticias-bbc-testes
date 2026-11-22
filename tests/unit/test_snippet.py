@@ -58,3 +58,8 @@ class TestDestacarTermosNoSnippet:
         destacado = destacar_termos_no_snippet("growth of 40% and 5%", ["%", "40%"])
 
         assert destacado == "growth of <b>40%</b> and 5<b>%</b>"
+
+    def test_nao_destaca_termo_dentro_de_outra_palavra(self):
+        destacado = destacar_termos_no_snippet("corporate rate", ["rate"])
+
+        assert destacado == "corporate <b>rate</b>"
