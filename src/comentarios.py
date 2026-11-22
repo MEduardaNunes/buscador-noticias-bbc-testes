@@ -1,5 +1,10 @@
 """Comentários dos usuários nos documentos do corpus."""
+from datetime import datetime, timezone
 from typing import Callable, Protocol
+
+from src.modelos import Categoria
+
+TAMANHO_MAXIMO_COMENTARIO = 500
 
 
 class RepositorioComentarios(Protocol):
@@ -95,3 +100,53 @@ class RepositorioComentariosSQLite:
                 (comentario_id,),
             )
             return cursor.rowcount > 0
+
+
+class ServicoComentarios:
+    """Regras de negócio dos comentários: validação, publicação, listagem e exclusão."""
+
+    def __init__(
+        self,
+        repositorio: RepositorioComentarios,
+        relogio: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
+    ):
+        self._repositorio = repositorio
+        self._relogio = relogio
+
+    @staticmethod
+    def _validar_usuario(usuario: str) -> str:
+        usuario_limpo = (usuario or "").strip()
+        if not usuario_limpo:
+            raise ValueError("Usuário é obrigatório.")
+        return usuario_limpo
+
+    @staticmethod
+    def _validar_documento(categoria: str, doc_id: str) -> tuple[str, str]:
+        categoria_limpa = (categoria or "").strip().lower()
+        doc_id_limpo = (doc_id or "").strip()
+
+        if categoria_limpa not in {c.name for c in Categoria}:
+            raise ValueError(f"Categoria inválida: '{categoria}'.")
+
+        if not doc_id_limpo.isdigit():
+            raise ValueError(f"Identificador de documento inválido: '{doc_id}'.")
+
+        # Normaliza o identificador para 3 dígitos, como nos arquivos do corpus (ex: '7' -> '007')
+        return categoria_limpa, f"{int(doc_id_limpo):03d}"
+
+    @staticmethod
+    def _validar_texto(texto: str) -> str:
+        texto_limpo = (texto or "").strip()
+        if not texto_limpo:
+            raise ValueError("O comentário não pode estar vazio.")
+        if len(texto_limpo) > TAMANHO_MAXIMO_COMENTARIO:
+            raise ValueError(f"O comentário deve ter no máximo {TAMANHO_MAXIMO_COMENTARIO} caracteres.")
+        return texto_limpo
+
+    def comentar(self, usuario: str, categoria: str, doc_id: str, texto: str) -> int:
+        """Publica um comentário no documento. Retorna o identificador do comentário criado."""
+        usuario_limpo = self._validar_usuario(usuario)
+        categoria_limpa, doc_id_limpo = self._validar_documento(categoria, doc_id)
+        texto_limpo = self._validar_texto(texto)
+        criado_em = self._relogio().isoformat()
+        return self._repositorio.adicionar(usuario_limpo, categoria_limpa, doc_id_limpo, texto_limpo, criado_em)
