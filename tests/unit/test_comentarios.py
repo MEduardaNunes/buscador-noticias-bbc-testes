@@ -73,3 +73,9 @@ class TestServicoComentarios:
         servico.comentar("ana", "business", "001", texto_no_limite)
 
         assert servico.listar_comentarios("business", "001")[0]["texto"] == texto_no_limite
+
+    def test_rejeita_comentario_acima_do_tamanho_maximo(self, servico):
+        texto_acima_do_limite = "a" * (TAMANHO_MAXIMO_COMENTARIO + 1)
+
+        with pytest.raises(ValueError):
+            servico.comentar("ana", "business", "001", texto_acima_do_limite)
