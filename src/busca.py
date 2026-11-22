@@ -27,6 +27,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.classes.trie_compacta import TrieCompacta
 from src.utilitarios import normaliza_query
 from src.modelos import Categoria
+from src.resultados import ResultadoItem
 
 
 class NoParsing:
@@ -477,3 +478,43 @@ class GerenciadorDeBusca:
                         'freq': freq
                     })
         return dados_por_doc_id
+
+    def _agregar_resultados_finais(self, doc_ids: set, dados_por_doc_id: dict, termo_default: str):
+        """
+        Calcula a relevância final (média dos z-scores) e encontra o melhor termo para o snippet.
+
+        Parâmetros:
+            doc_ids (set): documentos que passaram na busca booleana.
+            dados_por_doc_id (dict): scores calculados por _calcular_scores_por_documento.
+            termo_default (str): termo usado quando o documento não contém nenhum termo da consulta.
+
+        Retorna:
+            Lista de ResultadoItem.
+        """
+        resultados = []
+
+        for doc_id in doc_ids:
+            doc_data = dados_por_doc_id.get(doc_id)
+
+            # O doc passou no filtro booleano, mas não contém nenhum dos termos da query para calcular o score.
+            if not doc_data or not doc_data['termo_scores']:
+                relevancia_final = 0.0
+                melhor_termo = termo_default
+                melhor_posicao = 0
+            else:
+                # Calcula a média dos z-scores como relevância final
+                scores = [t['z_score'] for t in doc_data['termo_scores']]
+                relevancia_final = sum(scores) / len(scores)
+
+                # Encontra o termo com a maior frequência para ser o foco do snippet
+                melhor_termo_info = max(doc_data['termo_scores'], key=lambda x: x['freq'])
+                melhor_termo = melhor_termo_info['termo']
+                melhor_posicao = melhor_termo_info['posicao']
+
+            resultados.append(ResultadoItem(
+                doc_id=doc_id,
+                relevancia=relevancia_final,
+                query_termo=melhor_termo,
+                caractere_inicial=melhor_posicao
+            ))
+        return resultados
