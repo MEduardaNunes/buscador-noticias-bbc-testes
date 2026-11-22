@@ -101,3 +101,32 @@ def _merge(esquerda, direita, chave):
     lista_combinada.extend(direita[indice_dir:])
 
     return lista_combinada
+
+def mergesort(lista, chave):
+    """
+    Ordena uma lista de forma decrescente usando o algoritmo mergesort.
+
+    O algoritmo divide a lista em duas metades recursivamente, até que cada parte contenha um único elemento,
+    e depois mescla as metades ordenadas.
+
+    Parâmetros:
+        - lista (list): Lista a ser ordenada.
+        - chave (function): Função que extrai a chave de comparação de cada item.
+
+    Retorno:
+        list: Lista ordenada em ordem decrescente.
+    """
+    tamanho = len(lista)
+    if tamanho <= 1: # Lista já está ordenada (ou vazia)
+        return lista
+
+    # Divide a lista ao meio
+    meio = tamanho // 2
+    metade_esquerda = lista[:meio]
+    metade_direita = lista[meio:]
+
+    esquerda = mergesort(metade_esquerda, chave)
+    direita = mergesort(metade_direita, chave)
+
+    # Combina as metades ordenadas
+    return _merge(esquerda, direita, chave)
