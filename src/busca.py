@@ -518,3 +518,20 @@ class GerenciadorDeBusca:
                 caractere_inicial=melhor_posicao
             ))
         return resultados
+
+    def _preparar_resultados_para_ordenacao(self, arvore_raiz: NoParsing, doc_ids: set, lista_todos_os_termos: list):
+        """Calcula a relevância e define o termo/posição de destaque de cada documento."""
+
+        lista_tokens_validos = lista_todos_os_termos
+
+        # A consulta não tem termos ou a árvore é nula
+        if not lista_tokens_validos:
+            return [ResultadoItem(doc_id=d, relevancia=0.0, query_termo="", caractere_inicial=0) for d in doc_ids]
+
+        # Coleta os z-scores, posições e freqs de cada termo em cada doc
+        dados_por_doc_id = self._calcular_scores_por_documento(doc_ids, lista_tokens_validos)
+
+        # Agrega os scores e encontra o melhor termo para o snippet
+        # Passa o primeiro termo como 'default' para o caso de um doc não ter termos
+        termo_default = lista_tokens_validos[0]
+        return self._agregar_resultados_finais(doc_ids, dados_por_doc_id, termo_default)
