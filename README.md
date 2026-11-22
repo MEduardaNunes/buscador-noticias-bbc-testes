@@ -15,6 +15,7 @@ Protótipo funcional de **máquina de busca web** desenvolvido para indexar e co
 - **Consultas booleanas:** processa expressões com os operadores `AND`, `OR`, `NOT` e parênteses por meio de um *parser* recursivo definido por gramática EBNF.
 - **Ranqueamento e paginação:** ordena os documentos com *mergesort* pela média dos *z-scores* dos termos da consulta e exibe os resultados em páginas de 10 itens com *snippets* destacados.
 - **Navegação web:** permite abrir o conteúdo completo de cada documento, consultar o histórico das 10 buscas mais recentes da sessão e acessar a página de ajuda com exemplos de sintaxe.
+- **Comentários nos documentos:** usuários autenticados podem comentar as notícias (até 500 caracteres), ver os comentários de outras pessoas e excluir apenas os próprios. Ao excluir a conta, os comentários do usuário também são removidos.
 
 ## Tecnologias
 - **Aplicação:** Python, Flask, Jinja2, HTML e CSS.
