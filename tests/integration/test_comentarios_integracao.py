@@ -51,3 +51,12 @@ def test_comentario_publicado_aparece_na_pagina_do_documento(cliente):
     assert "Comentário publicado." in html
     assert "Adorei a notícia" in html
     assert "Comentários (1)" in html
+
+
+def test_comentario_vazio_exibe_mensagem_de_erro_e_nao_salva(cliente):
+    cadastrar_e_entrar(cliente)
+
+    resposta = cliente.post(URL_COMENTAR, data={"texto": "     "}, follow_redirects=True)
+
+    assert "O comentário não pode estar vazio." in resposta.get_data(as_text=True)
+    assert comentarios_do_documento() == []
