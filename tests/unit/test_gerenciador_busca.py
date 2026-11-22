@@ -47,3 +47,9 @@ class TestExecutarBusca:
         resultados = gerenciador.executar_busca("GAS")
 
         assert ids_retornados(resultados) == {"business/003"}
+
+    @pytest.mark.parametrize("consulta", ["oil AND", "(oil OR gas", "AND prices", ""])
+    def test_consulta_com_sintaxe_invalida_retorna_lista_vazia(self, gerenciador, consulta):
+        resultados = gerenciador.executar_busca(consulta)
+
+        assert resultados == []
