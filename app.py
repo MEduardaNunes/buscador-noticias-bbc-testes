@@ -427,6 +427,23 @@ def comentar_documento(categoria, id_documento):
 
     return redirect(url_for('exibir_documento', categoria=categoria, id_documento=id_documento, _anchor='comentarios'))
 
+
+@app.route('/comentarios/<int:comentario_id>/excluir', methods=['POST'])
+def excluir_comentario(comentario_id):
+    """Exclui um comentário, desde que o usuário autenticado seja o autor."""
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        comentario = obter_servico_comentarios().excluir_comentario(session['usuario'], comentario_id)
+    except ComentarioNaoEncontradoError:
+        abort(404, description='Comentário não encontrado.')
+    except PermissaoNegadaError:
+        abort(403, description='Você só pode excluir os seus próprios comentários.')
+
+    flash('Comentário excluído.', 'sucesso')
+    return redirect(url_for('exibir_documento', categoria=comentario['categoria'], id_documento=comentario['doc_id'], _anchor='comentarios'))
+
 if __name__ == '__main__':
     inicializar_indice()
 
