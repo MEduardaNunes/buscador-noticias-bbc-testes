@@ -70,3 +70,9 @@ class TestMergesort:
         resultado = mergesort(palavras, chave=len)
 
         assert resultado == ["economia", "bbc", "oi", "a"]
+
+    @pytest.mark.parametrize("lista", [[], [42]])
+    def test_retorna_lista_vazia_ou_unitaria_sem_alteracao(self, lista):
+        resultado = mergesort(lista, chave=lambda item: item)
+
+        assert resultado == lista
