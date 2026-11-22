@@ -201,14 +201,6 @@ def ajuda():
     """Exibe a página de ajuda."""
     return render_template('ajuda.html')
 
-if __name__ == '__main__':
-    inicializar_indice()
-     
-    if gerenciador_de_busca:    
-        app.run(debug=False) 
-    else:
-        print("ERRO: Gerenciador de busca não foi inicializado.")
-        print("O servidor Flask não será iniciado.")
 
 @app.route('/perfil', methods=['GET', 'POST'])
 def perfil():
@@ -404,6 +396,12 @@ def exibir_documento(categoria, id_documento):
     return render_template('exibir_documento.html', documento=documento, artigo_salvo=artigo_salvo,)
 
 if __name__ == '__main__':
-    host = os.getenv('HOST', '127.0.0.1')
-    port = int(os.getenv('PORT', '5000'))
-    app.run(host=host, port=port, debug=False)
+    inicializar_indice()
+
+    if gerenciador_de_busca:
+        host = os.getenv('HOST', '127.0.0.1')
+        port = int(os.getenv('PORT', '5000'))
+        app.run(host=host, port=port, debug=False)
+    else:
+        print("ERRO: Gerenciador de busca não foi inicializado.")
+        print("O servidor Flask não será iniciado.")
