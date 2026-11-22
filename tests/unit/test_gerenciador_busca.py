@@ -53,3 +53,8 @@ class TestExecutarBusca:
         resultados = gerenciador.executar_busca(consulta)
 
         assert resultados == []
+
+    def test_termo_inexistente_no_corpus_retorna_lista_vazia(self, gerenciador):
+        resultados = gerenciador.executar_busca("football")
+
+        assert resultados == []
