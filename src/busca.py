@@ -303,3 +303,25 @@ class GerenciadorDeBusca:
         self.caminho_corpus = caminho_corpus # Caminho dos dados
         self.estatisticas_corpus = estatisticas_corpus # Dicionário com estatísticas para o cálculo do z-score
         self.mapa_categorias = {c.value: c.name for c in Categoria} # Usado para formatar o doc_id na saída
+
+    def _tem_no_invalido(self, no):
+        """
+        Verifica recursivamente se um nó é inválido, ou seja, se algum
+        de seus filhos obrigatórios é None.
+
+        Parâmetros:
+            no (NoParsing): o nó a ser verificado.
+
+        Retorna:
+            True se for inválido, False caso contrário.
+        """
+        if no is None:
+            return True
+
+        if no.operador in ("AND", "OR"):
+            return self._tem_no_invalido(no.esquerda) or self._tem_no_invalido(no.direita)
+
+        if no.operador == "NOT":
+            return self._tem_no_invalido(no.direita)
+
+        return False
