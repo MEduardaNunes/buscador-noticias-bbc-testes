@@ -32,3 +32,8 @@ class TestExecutarBusca:
         resultados = gerenciador.executar_busca("oil AND prices")
 
         assert ids_retornados(resultados) == {"business/001"}
+
+    def test_or_retorna_documentos_com_qualquer_um_dos_termos(self, gerenciador):
+        resultados = gerenciador.executar_busca("gas OR phone")
+
+        assert ids_retornados(resultados) == {"business/003", "tech/004"}
