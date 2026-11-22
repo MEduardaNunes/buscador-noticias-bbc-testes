@@ -27,7 +27,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.classes.trie_compacta import TrieCompacta
 from src.utilitarios import normaliza_query
 from src.modelos import Categoria
-from src.resultados import ResultadoItem
+from src.resultados import ResultadoItem, GerenciadorResultados
 
 
 class NoParsing:
@@ -535,3 +535,50 @@ class GerenciadorDeBusca:
         # Passa o primeiro termo como 'default' para o caso de um doc não ter termos
         termo_default = lista_tokens_validos[0]
         return self._agregar_resultados_finais(doc_ids, dados_por_doc_id, termo_default)
+
+    def executar_busca(self, query_string: str, num_pagina: int = 1, tamanho_pagina: int = 10):
+        """
+        Executa o ciclo completo da recuperação de informação e retorna os resultados formatados.
+
+        Parâmetros:
+            query_string (str): consulta digitada pelo usuário.
+            num_pagina (int): página de resultados desejada (começa em 1).
+            tamanho_pagina (int): quantidade de resultados por página.
+
+        Retorna:
+            Lista de dicionários com 'id_completo', 'categoria', 'id_num', 'score' e 'snippet',
+            ordenada por relevância. Retorna lista vazia se a consulta for inválida ou não tiver resultados.
+        """
+        try:
+            # Parsing e busca booleana (retorna ids filtrados e a raiz da árvore)
+            documentos_finais_ids, arvore_raiz = self._realiza_consulta(query_string)
+
+            if not documentos_finais_ids:
+                return []
+
+            # Extrai os termos da consulta da árvore
+            lista_todos_os_termos = list(self._coletar_termos_query(arvore_raiz))
+
+            # Calcula z-scores, relevâncias e termo de foco
+            resultados = self._preparar_resultados_para_ordenacao(
+                arvore_raiz, documentos_finais_ids, lista_todos_os_termos
+            )
+
+            # Inicializa o gerenciador de resultados
+            gerenciador = GerenciadorResultados(
+                self.caminho_corpus,
+                self.mapa_categorias,
+                lista_todos_os_termos
+            )
+
+            # Adiciona os resultados calculados para ordenação
+            for item in resultados:
+                gerenciador.adicionar_resultado(
+                    item.doc_id, item.relevancia, item.query_termo, item.caractere_inicial
+                )
+
+            return gerenciador.obter_pagina_formatada(num_pagina, tamanho_pagina)
+
+        except Exception as e:
+            traceback.print_exc()
+            return [{'id_completo': 'ERRO Interno', 'categoria': '', 'id_num': '', 'score': 'N/A', 'snippet': f'Falha inesperada na busca: {e}'}]
