@@ -65,6 +65,11 @@
                                 <span class="comentario-data">{{ comentario.data_exibicao }}</span>
                             </div>
                             <p class="comentario-texto">{{ comentario.texto }}</p>
+                            {% if comentario.usuario == session.get('usuario') %}
+                                <form method="POST" action="{{ url_for('excluir_comentario', comentario_id=comentario.id) }}">
+                                    <button type="submit" class="botao-excluir-comentario">Excluir</button>
+                                </form>
+                            {% endif %}
                         </li>
                     {% endfor %}
                 </ul>
