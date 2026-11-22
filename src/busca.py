@@ -402,3 +402,31 @@ class GerenciadorDeBusca:
         self._coletar_termos_query(no.direita, termos)
 
         return termos
+
+    def _realiza_consulta(self, query):
+        """
+        Realiza uma consulta sobre o conjunto de documentos, por meio da trie compacta
+        que armazena todas as palavras e de uma árvore de parsing que processa a query.
+
+        Parâmetros:
+            query (str): a consulta a ser realizada.
+
+        Retorna:
+            Uma tupla (documentos, arvore), em que documentos é o conjunto de tuplas
+            (seção, número) que satisfazem a consulta e arvore é a raiz da árvore de parsing.
+            Caso a consulta seja inválida, retorna (set(), None).
+        """
+        try:
+            parser = ArvoreParsing(query)
+            arvore = parser.gera_parsing_tokens()
+
+            if self._arvore_eh_valida(arvore):
+                documentos = self._processa_arvore_parsing(arvore)
+                return documentos, arvore
+
+            print("ERRO: Árvore de parsing inválida.")
+            return set(), None
+
+        except ValueError as e:
+            print("ERRO de parsing: ", e)
+            return set(), None
