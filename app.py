@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from src.artigos_salvos import RepositorioArtigosSalvosSQLite, ServicoArtigosSalvos
 from src.modelos import Categoria
 from src.classes.indexer import Corpus
+from src.busca import GerenciadorDeBusca
 import traceback
 
 load_dotenv()
