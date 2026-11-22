@@ -16,6 +16,12 @@
 
     <div class="central">
         <h1>{{ documento.categoria | capitalize }}/{{ documento.id }}</h1> 
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria_mensagem, mensagem in mensagens %}
+                <p class="auth-mensagem {{ categoria_mensagem }}">{{ mensagem }}</p>
+            {% endfor %}
+        {% endwith %}
         <div class="acoes-artigo">
             {% if artigo_salvo %}
                 <form method="POST" action="{{ url_for('remover_artigo') }}">
