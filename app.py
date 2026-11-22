@@ -4,6 +4,12 @@ import sqlite3
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from src.artigos_salvos import RepositorioArtigosSalvosSQLite, ServicoArtigosSalvos
+from src.comentarios import (
+    ComentarioNaoEncontradoError,
+    PermissaoNegadaError,
+    RepositorioComentariosSQLite,
+    ServicoComentarios,
+)
 from src.modelos import Categoria
 from src.classes.indexer import Corpus
 from src.busca import GerenciadorDeBusca
@@ -90,6 +96,7 @@ def inicializar_banco():
             """
         )
     RepositorioArtigosSalvosSQLite(get_db).inicializar_tabela()
+    RepositorioComentariosSQLite(get_db).inicializar_tabela()
 
 
 def obter_servico_artigos_salvos() -> ServicoArtigosSalvos:
@@ -99,6 +106,15 @@ def obter_servico_artigos_salvos() -> ServicoArtigosSalvos:
 
     repositorio = RepositorioArtigosSalvosSQLite(get_db)
     return ServicoArtigosSalvos(repositorio)
+
+
+def obter_servico_comentarios() -> ServicoComentarios:
+    servico_configurado = app.config.get('SERVICO_COMENTARIOS')
+    if servico_configurado is not None:
+        return servico_configurado
+
+    repositorio = RepositorioComentariosSQLite(get_db)
+    return ServicoComentarios(repositorio)
 
 inicializar_banco()
 
