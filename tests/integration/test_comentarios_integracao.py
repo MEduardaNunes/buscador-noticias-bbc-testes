@@ -115,3 +115,12 @@ def test_excluir_comentario_inexistente_retorna_404(cliente):
     resposta = cliente.post("/comentarios/999/excluir")
 
     assert resposta.status_code == 404
+
+
+def test_excluir_conta_remove_os_comentarios_do_usuario(cliente):
+    cadastrar_e_entrar(cliente)
+    cliente.post(URL_COMENTAR, data={"texto": "Comentário que deve sumir"})
+
+    cliente.post("/perfil/deletar")
+
+    assert comentarios_do_documento() == []
