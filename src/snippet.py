@@ -35,3 +35,24 @@ def _ler_conteudo_documento(doc_id, caminho_corpus, mapa_categorias):
         info_erro = caminho_arquivo if caminho_arquivo else str(doc_id)
         print(f"[Erro na leitura de documento para criar snippet] Erro inesperado ao ler {info_erro}: {e}")
         return None
+
+
+def _calcular_limites_snippet(tamanho_conteudo_documento, indice_caractere_inicial, len_termo):
+    """
+    Calcula os limites para o trecho (snippet) a ser extraído de um documento, baseado no índice do termo e seu tamanho.
+
+    Parâmetros:
+    - tamanho_conteudo_documento (int): O comprimento total do conteúdo do documento.
+    - indice_caractere_inicial (int): O índice inicial onde o termo de interesse começa no conteúdo.
+    - len_termo (int): O comprimento do termo de interesse.
+
+    Retorna:
+    - tuple: Um tupla contendo os índices (início, fim) do snippet, com 80 caracteres antes e depois do termo.
+    """
+    # Define o início do snippet 80 caracteres antes do termo (limitado a 0)
+    inicio = max(0, indice_caractere_inicial - 80)
+
+    # Define o fim do snippet 80 caracteres depois do fim do termo (limitado ao tamanho do conteúdo)
+    fim = min(tamanho_conteudo_documento, indice_caractere_inicial + len_termo + 80)
+
+    return inicio, fim
