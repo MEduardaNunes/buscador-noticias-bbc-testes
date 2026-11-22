@@ -79,3 +79,11 @@ class TestServicoComentarios:
 
         with pytest.raises(ValueError):
             servico.comentar("ana", "business", "001", texto_acima_do_limite)
+
+    @pytest.mark.parametrize(
+        ("categoria", "doc_id"),
+        [("esportes", "001"), ("", "001"), ("business", "abc"), ("business", "")],
+    )
+    def test_rejeita_comentario_em_documento_invalido(self, servico, categoria, doc_id):
+        with pytest.raises(ValueError):
+            servico.comentar("ana", categoria, doc_id, "Comentário")
