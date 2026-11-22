@@ -58,3 +58,10 @@ class TestExecutarBusca:
         resultados = gerenciador.executar_busca("football")
 
         assert resultados == []
+
+    def test_ordena_resultados_por_relevancia_decrescente(self, gerenciador):
+        resultados = gerenciador.executar_busca("oil")
+
+        ids_em_ordem = [resultado["id_completo"] for resultado in resultados]
+        assert ids_em_ordem == ["business/001", "business/002"]
+        assert float(resultados[0]["score"]) > float(resultados[1]["score"])
