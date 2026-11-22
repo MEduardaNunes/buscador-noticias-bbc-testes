@@ -74,3 +74,16 @@ class RepositorioComentariosSQLite:
             ).fetchall()
 
         return [self._para_dict(r) for r in registros]
+
+    def buscar_por_id(self, comentario_id: int) -> dict | None:
+        with self._conexao_factory() as conexao:
+            registro = conexao.execute(
+                """
+                SELECT id, usuario, categoria, doc_id, texto, criado_em
+                FROM comentarios
+                WHERE id = ?
+                """,
+                (comentario_id,),
+            ).fetchone()
+
+        return self._para_dict(registro) if registro is not None else None
