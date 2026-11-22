@@ -61,3 +61,8 @@ class TestServicoComentarios:
         assert comentarios[0]["usuario"] == "ana"
         assert comentarios[0]["texto"] == "Ótima notícia!"
         assert comentarios[0]["data_exibicao"] == "22/11/2026 14:30"
+
+    @pytest.mark.parametrize("texto", ["", "     ", None])
+    def test_rejeita_comentario_vazio(self, servico, texto):
+        with pytest.raises(ValueError):
+            servico.comentar("ana", "business", "001", texto)
