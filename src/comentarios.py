@@ -7,6 +7,14 @@ from src.modelos import Categoria
 TAMANHO_MAXIMO_COMENTARIO = 500
 
 
+class ComentarioNaoEncontradoError(LookupError):
+    """Lançada quando o comentário solicitado não existe."""
+
+
+class PermissaoNegadaError(Exception):
+    """Lançada quando um usuário tenta excluir um comentário de outra pessoa."""
+
+
 class RepositorioComentarios(Protocol):
     """Contrato de persistência dos comentários, permitindo substituição por Fakes em testes."""
 
@@ -159,3 +167,20 @@ class ServicoComentarios:
             {**comentario, "data_exibicao": datetime.fromisoformat(comentario["criado_em"]).strftime("%d/%m/%Y %H:%M")}
             for comentario in comentarios
         ]
+
+    def excluir_comentario(self, usuario: str, comentario_id: int) -> dict:
+        """
+        Exclui um comentário, desde que o usuário seja o autor.
+        Retorna o comentário excluído (útil para redirecionar ao documento).
+        """
+        usuario_limpo = self._validar_usuario(usuario)
+        comentario = self._repositorio.buscar_por_id(comentario_id)
+
+        if comentario is None:
+            raise ComentarioNaoEncontradoError(f"Comentário {comentario_id} não encontrado.")
+
+        if comentario["usuario"] != usuario_limpo:
+            raise PermissaoNegadaError("Apenas o autor pode excluir o comentário.")
+
+        self._repositorio.remover(comentario_id)
+        return comentario
