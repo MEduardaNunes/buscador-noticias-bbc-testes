@@ -65,3 +65,11 @@ class TestExecutarBusca:
         ids_em_ordem = [resultado["id_completo"] for resultado in resultados]
         assert ids_em_ordem == ["business/001", "business/002"]
         assert float(resultados[0]["score"]) > float(resultados[1]["score"])
+
+    def test_pagina_resultados_pelo_tamanho_informado(self, gerenciador):
+        primeira_pagina = gerenciador.executar_busca("prices OR oil OR grow", num_pagina=1, tamanho_pagina=2)
+        segunda_pagina = gerenciador.executar_busca("prices OR oil OR grow", num_pagina=2, tamanho_pagina=2)
+
+        assert len(primeira_pagina) == 2
+        assert len(segunda_pagina) == 2
+        assert ids_retornados(primeira_pagina).isdisjoint(ids_retornados(segunda_pagina))
