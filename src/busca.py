@@ -430,3 +430,50 @@ class GerenciadorDeBusca:
         except ValueError as e:
             print("ERRO de parsing: ", e)
             return set(), None
+
+    def _calcular_scores_por_documento(self, doc_ids: set, lista_tokens_validos: list):
+        """
+        Monta um dicionário com z-score, posição e frequência de cada termo para cada documento relevante.
+
+        Parâmetros:
+            doc_ids (set): documentos que passaram na busca booleana.
+            lista_tokens_validos (list): termos da consulta.
+
+        Retorna:
+            Dicionário {doc_id: {'termo_scores': [{'z_score', 'posicao', 'termo', 'freq'}, ...]}}.
+        """
+        dados_por_doc_id = {}
+
+        for termo in lista_tokens_validos:
+            documentos_do_termo = self.trie.busca_palavra(termo)
+            stats = self.estatisticas_corpus.get(termo, {"media": 0, "desvio_padrao": 0})
+
+            media = stats['media']
+            desvio = stats['desvio_padrao']
+
+            # Se o termo não existe na Trie, pula para o próximo termo
+            if not documentos_do_termo:
+                continue
+
+            # Itera apenas nos documentos que passaram na busca booleana
+            for doc_id in doc_ids:
+                # Verifica se o doc atual (da busca booleana) contém o termo atual
+                if doc_id in documentos_do_termo:
+
+                    dados = documentos_do_termo[doc_id]
+                    freq = dados['frequencia']
+                    pos = dados['primeira_posicao']
+
+                    # Cálculo do z-score: (frequência - média) / desvio padrão
+                    z_score = (freq - media) / desvio if desvio != 0 else 0
+
+                    if doc_id not in dados_por_doc_id:
+                        dados_por_doc_id[doc_id] = {'termo_scores': []}
+
+                    dados_por_doc_id[doc_id]['termo_scores'].append({
+                        'z_score': z_score,
+                        'posicao': pos,
+                        'termo': termo,
+                        'freq': freq
+                    })
+        return dados_por_doc_id
