@@ -301,6 +301,8 @@ def deletar_perfil():
     with get_db() as conexao:
         conexao.execute('DELETE FROM usuarios WHERE usuario = ?', (usuario_atual,))
 
+    obter_servico_comentarios().excluir_comentarios_do_usuario(usuario_atual)
+
     session.clear()
     flash('Sua conta foi excluída.', 'sucesso')
     return redirect(url_for('login'))
