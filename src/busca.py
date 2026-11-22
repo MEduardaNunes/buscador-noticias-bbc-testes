@@ -371,3 +371,34 @@ class GerenciadorDeBusca:
             palavra = no.operador
             documentos_da_palavra = self.trie.busca_palavra(palavra)
             return set(documentos_da_palavra.keys()) if documentos_da_palavra else set()
+
+    def _coletar_termos_query(self, no: NoParsing, termos: set = None):
+        """
+        Percorre a árvore de parsing recursivamente, coletando todos os nós que
+        representam palavras (termos) e ignorando os operadores (AND, OR, NOT).
+
+        Parâmetros:
+            no (NoParsing): o nó atual a ser processado (começando pela raiz).
+            termos (set): o conjunto acumulador de termos únicos.
+
+        Retorna:
+            Um set de strings contendo todos os termos únicos da consulta.
+        """
+        if termos is None:
+            termos = set()
+
+        if no is None:
+            return termos
+
+        # Verifica se o nó é uma palavra
+        if no.operador not in ("AND", "OR", "NOT"):
+            termos.add(no.operador)
+            return termos
+
+        # Processa o filho da esquerda (para AND e OR)
+        self._coletar_termos_query(no.esquerda, termos)
+
+        # Processa o filho da direita (para AND, OR e NOT)
+        self._coletar_termos_query(no.direita, termos)
+
+        return termos
