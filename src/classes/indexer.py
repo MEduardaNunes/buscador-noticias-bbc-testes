@@ -253,6 +253,7 @@ class Corpus:
     def _carregar_trie(self, linhas, indice_trie):
         """Processa as linhas da trie e reconstrói self.trie."""
         self.trie = TrieCompacta()
+        self.todos_documentos = set()
         pilha_de_pais = [self.trie.raiz] # Pilha para reconstruir a árvore
                 
         for i in range(indice_trie + 2, len(linhas)):
@@ -266,6 +267,7 @@ class Corpus:
 
                 novo_no = NoTrie(valor)
                 novo_no.documentos = lista_invertida_dict
+                self.todos_documentos.update(lista_invertida_dict.keys())
 
                 while len(pilha_de_pais) > profundidade_atual:
                     pilha_de_pais.pop()

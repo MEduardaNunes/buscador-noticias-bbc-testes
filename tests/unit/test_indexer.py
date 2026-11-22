@@ -213,6 +213,22 @@ class TestCarregarDeDisco:
         assert corpus_carregado.trie.busca_palavra("c:d") == {(Categoria.tech.value, 1): {"frequencia": 1, "primeira_posicao": 5}}
         assert corpus_carregado.trie.busca_palavra("data") == {(Categoria.tech.value, 1): {"frequencia": 1, "primeira_posicao": 9}}
 
+    def test_restaura_conjunto_de_todos_os_documentos_indexados(self, tmp_path):
+        corpus_dir = tmp_path / "corpus"
+        (corpus_dir / "tech").mkdir(parents=True)
+        (corpus_dir / "sport").mkdir(parents=True)
+        (corpus_dir / "tech" / "001.txt").write_text("chip market", encoding="latin-1")
+        (corpus_dir / "sport" / "002.txt").write_text("final match", encoding="latin-1")
+        arquivo_indice = tmp_path / "indice.dat"
+        corpus_original = Corpus()
+        corpus_original.construir_indice(str(corpus_dir))
+        corpus_original.salvar_em_disco(str(arquivo_indice))
+
+        corpus_carregado = Corpus()
+        corpus_carregado.carregar_de_disco(str(arquivo_indice))
+
+        assert corpus_carregado.todos_documentos == {(Categoria.tech.value, 1), (Categoria.sport.value, 2)}
+
     def test_retorna_false_quando_arquivo_nao_existe(self, tmp_path):
         corpus = Corpus()
         sucesso = corpus.carregar_de_disco(str(tmp_path / "nao_existe.dat"))
