@@ -1,0 +1,63 @@
+import sqlite3
+from datetime import datetime, timezone
+
+import pytest
+
+from src.comentarios import (
+    ComentarioNaoEncontradoError,
+    PermissaoNegadaError,
+    RepositorioComentariosSQLite,
+    ServicoComentarios,
+    TAMANHO_MAXIMO_COMENTARIO,
+)
+
+INSTANTE_FIXO = datetime(2026, 11, 22, 14, 30, tzinfo=timezone.utc)
+
+
+class RepositorioComentariosFake:
+    """Fake em memória que preserva o contrato de RepositorioComentarios."""
+
+    def __init__(self) -> None:
+        self._comentarios: list[dict] = []
+        self._proximo_id = 1
+
+    def adicionar(self, usuario, categoria, doc_id, texto, criado_em) -> int:
+        comentario = {
+            "id": self._proximo_id,
+            "usuario": usuario,
+            "categoria": categoria,
+            "doc_id": doc_id,
+            "texto": texto,
+            "criado_em": criado_em,
+        }
+        self._comentarios.append(comentario)
+        self._proximo_id += 1
+        return comentario["id"]
+
+    def listar_por_documento(self, categoria, doc_id) -> list[dict]:
+        return [dict(c) for c in self._comentarios if c["categoria"] == categoria and c["doc_id"] == doc_id]
+
+    def buscar_por_id(self, comentario_id):
+        return next((dict(c) for c in self._comentarios if c["id"] == comentario_id), None)
+
+    def remover(self, comentario_id) -> bool:
+        tamanho_antes = len(self._comentarios)
+        self._comentarios = [c for c in self._comentarios if c["id"] != comentario_id]
+        return len(self._comentarios) < tamanho_antes
+
+
+@pytest.fixture
+def servico():
+    return ServicoComentarios(repositorio=RepositorioComentariosFake(), relogio=lambda: INSTANTE_FIXO)
+
+
+class TestServicoComentarios:
+    def test_comentar_registra_texto_sem_espacos_nas_bordas_com_autor_e_data(self, servico):
+        servico.comentar("ana", "business", "001", "   Ótima notícia!   ")
+
+        comentarios = servico.listar_comentarios("business", "001")
+
+        assert len(comentarios) == 1
+        assert comentarios[0]["usuario"] == "ana"
+        assert comentarios[0]["texto"] == "Ótima notícia!"
+        assert comentarios[0]["data_exibicao"] == "22/11/2026 14:30"
