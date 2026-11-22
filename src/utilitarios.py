@@ -71,3 +71,33 @@ def processar_texto(texto):
         tokens_com_posicao.append((token_normalizado, indice_char))
 
     return tokens_com_posicao
+
+def _merge(esquerda, direita, chave):
+    """
+    Função de mesclagem do algoritmo Merge Sort. Mescla duas listas ordenadas de forma decrescente em uma única lista ordenada.
+
+    Parâmetros:
+        - esquerda (list): Lista ordenada à esquerda.
+        - direita (list): Lista ordenada à direita.
+        - chave (function): Função que extrai a chave de comparação de cada item.
+
+    Retorno:
+        list: Lista mesclada de forma ordenada.
+    """
+    lista_combinada = []
+    indice_esq, indice_dir = 0, 0
+
+    # Compara os elementos das duas listas e adiciona o de maior chave primeiro
+    while indice_esq < len(esquerda) and indice_dir < len(direita):
+        if chave(esquerda[indice_esq]) >= chave(direita[indice_dir]):
+            lista_combinada.append(esquerda[indice_esq])
+            indice_esq += 1
+        else:
+            lista_combinada.append(direita[indice_dir])
+            indice_dir += 1
+
+    # Se houver, adiciona os elementos restantes de uma das listas
+    lista_combinada.extend(esquerda[indice_esq:])
+    lista_combinada.extend(direita[indice_dir:])
+
+    return lista_combinada
