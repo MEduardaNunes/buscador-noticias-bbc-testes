@@ -409,7 +409,14 @@ def exibir_documento(categoria, id_documento):
     if 'usuario' in session:
         artigo_salvo = obter_servico_artigos_salvos().artigo_esta_salvo(session['usuario'], categoria, id_formatado)
     
-    return render_template('exibir_documento.html', documento=documento, artigo_salvo=artigo_salvo,)
+    comentarios = obter_servico_comentarios().listar_comentarios(categoria, id_formatado)
+
+    return render_template(
+        'exibir_documento.html',
+        documento=documento,
+        artigo_salvo=artigo_salvo,
+        comentarios=comentarios,
+    )
 
 
 @app.route('/documento/<categoria>/<id_documento>/comentarios', methods=['POST'])
