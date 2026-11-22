@@ -70,3 +70,15 @@ def test_texto_do_comentario_e_escapado_no_html(cliente):
 
     assert "<script>alert(1)</script>" not in html
     assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html
+
+
+def test_visitante_ve_comentarios_mas_nao_ve_formulario_nem_botao_de_excluir(cliente):
+    cadastrar_e_entrar(cliente)
+    cliente.post(URL_COMENTAR, data={"texto": "Comentário da Ana"})
+    cliente.post("/logout")
+
+    html = cliente.get(URL_DOCUMENTO).get_data(as_text=True)
+
+    assert "Comentário da Ana" in html
+    assert 'id="texto-comentario"' not in html
+    assert "botao-excluir-comentario" not in html
