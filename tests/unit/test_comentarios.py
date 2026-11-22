@@ -108,3 +108,10 @@ class TestServicoComentarios:
         comentarios = servico.listar_comentarios("business", "007")
 
         assert [c["texto"] for c in comentarios] == ["Comentário"]
+
+    def test_autor_exclui_o_proprio_comentario(self, servico):
+        comentario_id = servico.comentar("ana", "business", "001", "Vou apagar")
+
+        servico.excluir_comentario("ana", comentario_id)
+
+        assert servico.listar_comentarios("business", "001") == []
