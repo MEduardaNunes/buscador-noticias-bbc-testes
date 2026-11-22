@@ -2,6 +2,8 @@
 import os
 import re
 
+from src.utilitarios import mergesort
+
 
 def _ler_conteudo_documento(doc_id, caminho_corpus, mapa_categorias):
     """
@@ -56,3 +58,64 @@ def _calcular_limites_snippet(tamanho_conteudo_documento, indice_caractere_inici
     fim = min(tamanho_conteudo_documento, indice_caractere_inicial + len_termo + 80)
 
     return inicio, fim
+
+
+def destacar_termos_no_snippet(texto_snippet, termos_validos: list):
+    """
+    Destaca todos os termos válidos dentro do snippet de texto, envolvendo-os com a tag <b>.
+    Evita aninhamento de tags (ex: <b><b>termo</b></b>).
+
+    Parâmetros:
+    - texto_snippet (str): O texto do snippet onde os termos válidos serão destacados.
+    - termos_validos (list): Lista de termos válidos da query que precisam ser destacados.
+
+    Retorna:
+    - str: O snippet de texto com os termos destacados.
+    """
+    texto_modificado = texto_snippet
+
+    # Normaliza os termos para minúsculas e remove duplicatas
+    conjunto_termos = {t.lower() for t in termos_validos if t and len(t) > 0}
+
+    # Ordena por tamanho, do maior para o menor (por exemplo, garante que "40%" seja processado antes de "%", evitando tags <b><b>)
+    termos_para_destaque = mergesort(list(conjunto_termos), chave=len)
+
+    for termo in termos_para_destaque:
+        termo_escapado = re.escape(termo)
+
+        # Adiciona \b apenas se o termo começar/terminar com um caractere alfanumérico (\w), evitando problemas com termos como "40%" ou "$"
+        padrao_prefixo = r'\b' if re.match(r'^\w', termo) else r''
+        padrao_sufixo = r'\b' if re.match(r'.*\w$', termo) else r''
+
+        # O termo_escapado é usado para substituir apenas o termo preservando os limites (\b) se eles existirem
+        string_padrao = padrao_prefixo + r'(' + termo_escapado + r')' + padrao_sufixo
+
+        matches_para_substituir = []
+
+        # Itera sobre todas as correspondências do termo no snippet
+        for match in re.finditer(string_padrao, texto_modificado, flags=re.IGNORECASE):
+
+            # Pega o texto antes da correspondência
+            texto_antes = texto_modificado[:match.start()]
+
+            # Verifica se a última tag antes do match foi <b> ou </b>
+            ultima_abertura = texto_antes.rfind('<b>')
+            ultimo_fechamento = texto_antes.rfind('</b>')
+
+            # Se 'ultima_abertura > ultimo_fechamento', o match está dentro de uma tag <b>
+            if ultima_abertura > ultimo_fechamento:
+                continue # Pula este match pois ele já está destacado
+
+            # Se não, é um match válido para destacar
+            matches_para_substituir.append(match)
+
+        # Aplica as substituições (do fim para o começo, para não invalidar os índices)
+        for match in reversed(matches_para_substituir):
+            grupo_match = match.group(1)
+
+            inicio = match.start(1)
+            fim = match.end(1)
+
+            texto_modificado = texto_modificado[:inicio] + f"<b>{grupo_match}</b>" + texto_modificado[fim:]
+
+    return texto_modificado
