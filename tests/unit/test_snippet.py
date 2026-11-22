@@ -47,6 +47,13 @@ class TestGerarSnippetFormatado:
 
         assert snippet == "[Termo de foco não encontrado no documento]"
 
+    def test_informa_quando_documento_nao_existe(self, caminho_corpus):
+        doc_inexistente = (1, 999)
+
+        snippet = gerar_snippet_formatado(doc_inexistente, "economy", 0, str(caminho_corpus), MAPA_CATEGORIAS, ["economy"])
+
+        assert snippet == "[Documento não encontrado]"
+
 
 class TestDestacarTermosNoSnippet:
     def test_destaca_todas_as_ocorrencias_ignorando_maiusculas(self):

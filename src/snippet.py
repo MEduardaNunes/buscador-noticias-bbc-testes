@@ -166,6 +166,9 @@ def gerar_snippet_formatado(doc_id, termo_em_foco, indice_caractere_inicial, cam
     """
     conteudo_documento = _ler_conteudo_documento(doc_id, caminho_corpus, mapa_categorias)
 
+    if conteudo_documento is None:
+        return "[Documento não encontrado]"
+
     indice_caractere_inicial = _obter_indice_termo(conteudo_documento, termo_em_foco, indice_caractere_inicial)
 
     if indice_caractere_inicial == -1:
