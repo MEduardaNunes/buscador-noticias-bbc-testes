@@ -60,3 +60,13 @@ def test_comentario_vazio_exibe_mensagem_de_erro_e_nao_salva(cliente):
 
     assert "O comentário não pode estar vazio." in resposta.get_data(as_text=True)
     assert comentarios_do_documento() == []
+
+
+def test_texto_do_comentario_e_escapado_no_html(cliente):
+    cadastrar_e_entrar(cliente)
+
+    resposta = cliente.post(URL_COMENTAR, data={"texto": "<script>alert(1)</script>"}, follow_redirects=True)
+    html = resposta.get_data(as_text=True)
+
+    assert "<script>alert(1)</script>" not in html
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html
