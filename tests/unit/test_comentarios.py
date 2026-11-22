@@ -101,3 +101,10 @@ class TestServicoComentarios:
         textos = [c["texto"] for c in servico.listar_comentarios("business", "001")]
 
         assert textos == ["Primeiro", "Segundo"]
+
+    def test_trata_identificador_com_e_sem_zeros_a_esquerda_como_mesmo_documento(self, servico):
+        servico.comentar("ana", "Business", "7", "Comentário")
+
+        comentarios = servico.listar_comentarios("business", "007")
+
+        assert [c["texto"] for c in comentarios] == ["Comentário"]
