@@ -87,3 +87,8 @@ class TestServicoComentarios:
     def test_rejeita_comentario_em_documento_invalido(self, servico, categoria, doc_id):
         with pytest.raises(ValueError):
             servico.comentar("ana", categoria, doc_id, "Comentário")
+
+    @pytest.mark.parametrize("usuario", ["", "   ", None])
+    def test_rejeita_comentario_sem_usuario(self, servico, usuario):
+        with pytest.raises(ValueError):
+            servico.comentar(usuario, "business", "001", "Comentário")
