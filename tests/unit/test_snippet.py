@@ -31,3 +31,11 @@ class TestGerarSnippetFormatado:
         snippet = gerar_snippet_formatado(doc_id, "economy", 0, str(caminho_corpus), MAPA_CATEGORIAS, ["economy"])
 
         assert snippet == "<b>Economy</b> grows."
+
+    @pytest.mark.parametrize("indice_incorreto", [0, 999])
+    def test_localiza_termo_pelo_texto_quando_indice_nao_corresponde(self, caminho_corpus, indice_incorreto):
+        doc_id = criar_documento(caminho_corpus, 1, "The economy is growing")
+
+        snippet = gerar_snippet_formatado(doc_id, "economy", indice_incorreto, str(caminho_corpus), MAPA_CATEGORIAS, ["economy"])
+
+        assert snippet == "The <b>economy</b> is growing"
