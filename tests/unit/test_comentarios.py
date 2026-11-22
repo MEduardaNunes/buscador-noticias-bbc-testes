@@ -127,3 +127,27 @@ class TestServicoComentarios:
     def test_excluir_comentario_inexistente_lanca_erro(self, servico):
         with pytest.raises(ComentarioNaoEncontradoError):
             servico.excluir_comentario("ana", 999)
+
+
+class TestRepositorioComentariosSQLite:
+    @pytest.fixture
+    def repositorio(self, tmp_path):
+        caminho_banco = tmp_path / "comentarios-teste.db"
+
+        def conexao_factory():
+            conexao = sqlite3.connect(caminho_banco)
+            conexao.row_factory = sqlite3.Row
+            return conexao
+
+        repositorio = RepositorioComentariosSQLite(conexao_factory)
+        repositorio.inicializar_tabela()
+        return repositorio
+
+    def test_persiste_e_lista_comentarios_do_documento_em_ordem_de_insercao(self, repositorio):
+        repositorio.adicionar("ana", "business", "001", "Primeiro", "2026-11-22T10:00:00+00:00")
+        repositorio.adicionar("bia", "sport", "002", "Outro documento", "2026-11-22T10:01:00+00:00")
+        repositorio.adicionar("duda", "business", "001", "Segundo", "2026-11-22T10:02:00+00:00")
+
+        comentarios = repositorio.listar_por_documento("business", "001")
+
+        assert [(c["usuario"], c["texto"]) for c in comentarios] == [("ana", "Primeiro"), ("duda", "Segundo")]
