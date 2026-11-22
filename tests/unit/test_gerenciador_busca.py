@@ -37,3 +37,8 @@ class TestExecutarBusca:
         resultados = gerenciador.executar_busca("gas OR phone")
 
         assert ids_retornados(resultados) == {"business/003", "tech/004"}
+
+    def test_not_exclui_documentos_que_contem_o_termo(self, gerenciador):
+        resultados = gerenciador.executar_busca("prices AND NOT oil")
+
+        assert ids_retornados(resultados) == {"business/003"}
