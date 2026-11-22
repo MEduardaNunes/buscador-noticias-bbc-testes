@@ -38,6 +38,26 @@
         <div class="conteudo-documento">
             {{ documento.conteudo }}
         </div>
+
+        <section id="comentarios" class="comentarios">
+            <h2>Comentários ({{ comentarios | length }})</h2>
+
+            {% if comentarios %}
+                <ul class="lista-comentarios">
+                    {% for comentario in comentarios %}
+                        <li class="comentario" data-id="{{ comentario.id }}">
+                            <div class="comentario-cabecalho">
+                                <span class="comentario-autor">{{ comentario.usuario }}</span>
+                                <span class="comentario-data">{{ comentario.data_exibicao }}</span>
+                            </div>
+                            <p class="comentario-texto">{{ comentario.texto }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="sem-comentarios">Nenhum comentário ainda.</p>
+            {% endif %}
+        </section>
     </div>
 </body>
 </html>
