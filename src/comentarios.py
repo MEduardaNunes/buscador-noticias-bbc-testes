@@ -150,3 +150,12 @@ class ServicoComentarios:
         texto_limpo = self._validar_texto(texto)
         criado_em = self._relogio().isoformat()
         return self._repositorio.adicionar(usuario_limpo, categoria_limpa, doc_id_limpo, texto_limpo, criado_em)
+
+    def listar_comentarios(self, categoria: str, doc_id: str) -> list[dict]:
+        """Lista os comentários do documento em ordem de publicação, com a data formatada para exibição."""
+        categoria_limpa, doc_id_limpo = self._validar_documento(categoria, doc_id)
+        comentarios = self._repositorio.listar_por_documento(categoria_limpa, doc_id_limpo)
+        return [
+            {**comentario, "data_exibicao": datetime.fromisoformat(comentario["criado_em"]).strftime("%d/%m/%Y %H:%M")}
+            for comentario in comentarios
+        ]
