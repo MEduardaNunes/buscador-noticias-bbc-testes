@@ -325,3 +325,19 @@ class GerenciadorDeBusca:
             return self._tem_no_invalido(no.direita)
 
         return False
+
+    def _arvore_eh_valida(self, arvore):
+        """
+        Verifica se uma árvore é válida, isto é, sem raiz nula e sem
+        nós inválidos.
+
+        Parâmetros:
+            arvore (NoParsing): a árvore a ser verificada.
+
+        Retorna:
+            True se for válida, ou False caso contrário.
+        """
+        if arvore is None:
+            return False
+
+        return not self._tem_no_invalido(arvore)
