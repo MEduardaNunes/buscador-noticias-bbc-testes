@@ -119,3 +119,31 @@ def destacar_termos_no_snippet(texto_snippet, termos_validos: list):
             texto_modificado = texto_modificado[:inicio] + f"<b>{grupo_match}</b>" + texto_modificado[fim:]
 
     return texto_modificado
+
+
+def _obter_indice_termo(conteudo_documento, termo_em_foco, indice_caractere_inicial):
+    """
+    Obtém o índice do termo de foco no conteúdo, utilizando o índice inicial fornecido ou buscando uma alternativa com a função find().
+
+    Parâmetros:
+    - conteudo_documento (str): O conteúdo completo do documento.
+    - termo_em_foco (str): O termo que deve ser localizado no conteúdo.
+    - indice_caractere_inicial (int): O índice inicial sugerido para começar a busca do termo.
+
+    Retorna:
+    - int: O índice do termo no conteúdo ou -1 caso o termo não seja encontrado.
+    """
+    if not (0 <= indice_caractere_inicial < len(conteudo_documento)):
+        indice_alternativo = conteudo_documento.lower().find(termo_em_foco.lower())
+        print(f"[Aviso Snippet] Índice {indice_caractere_inicial} inválido. Usando find() para {indice_alternativo}.")
+        return indice_alternativo
+    else:
+        termo_no_conteudo_documento = conteudo_documento[indice_caractere_inicial : indice_caractere_inicial + len(termo_em_foco)]
+        if termo_no_conteudo_documento.lower() != termo_em_foco.lower():
+            indice_alternativo = conteudo_documento.lower().find(termo_em_foco.lower())
+            if indice_alternativo != -1:
+                return indice_alternativo
+            else:
+                print(f"[Aviso Snippet] Termo '{termo_em_foco}' não encontrado no conteúdo.")
+                return -1  # Termo não encontrado
+    return indice_caractere_inicial
