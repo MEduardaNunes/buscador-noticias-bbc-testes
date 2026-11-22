@@ -1,7 +1,7 @@
 from src.modelos import Categoria
 from collections import namedtuple
 from src.utilitarios import processar_texto, mergesort
-from src.snippet import _gerar_snippet_formatado
+from src.snippet import gerar_snippet_formatado
 
 ResultadoItem = namedtuple('ResultadoItem', [
     'doc_id', # tupla (cat_int, num_int)
@@ -41,10 +41,10 @@ class GerenciadorResultados:
         if self._resultados_ordenados is None:
             self._resultados_ordenados = mergesort(self._resultados, self.obter_relevancia)
 
-     def gerar_snippet(self, item):
+    def gerar_snippet(self, item):
         """Tenta gerar o snippet e retorna uma mensagem em caso de falha"""
         try:
-            snippet = _gerar_snippet_formatado(
+            snippet = gerar_snippet_formatado(
                 item.doc_id, 
                 item.query_termo, 
                 item.caractere_inicial, 
@@ -57,7 +57,7 @@ class GerenciadorResultados:
             print(f"[Erro GerenciadorResultados] Falha ao gerar snippet para {item.doc_id}: {e}")
             return "[Falha na geração do snippet]"
 
-     def obter_pagina_formatada(self, num_pagina=1, tamanho_pagina=10):
+    def obter_pagina_formatada(self, num_pagina=1, tamanho_pagina=10):
         """
         Retorna uma lista de dicionários formatados para a página especificada,
         incluindo o snippet gerado. Garante que os resultados estejam ordenados.
