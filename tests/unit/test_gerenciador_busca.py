@@ -73,3 +73,11 @@ class TestExecutarBusca:
         assert len(primeira_pagina) == 2
         assert len(segunda_pagina) == 2
         assert ids_retornados(primeira_pagina).isdisjoint(ids_retornados(segunda_pagina))
+
+    def test_formata_resultado_com_identificadores_e_snippet_destacado(self, gerenciador):
+        resultado = gerenciador.executar_busca("gas")[0]
+
+        assert resultado["id_completo"] == "business/003"
+        assert resultado["categoria"] == "business"
+        assert resultado["id_num"] == "003"
+        assert resultado["snippet"] == "<b>Gas</b> prices fall"
