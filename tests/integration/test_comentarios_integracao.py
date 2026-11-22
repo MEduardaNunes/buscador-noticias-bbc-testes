@@ -94,3 +94,16 @@ def test_autor_exclui_o_proprio_comentario_pela_pagina(cliente):
     assert resposta.status_code == 200
     assert "Comentário excluído." in resposta.get_data(as_text=True)
     assert comentarios_do_documento() == []
+
+
+def test_excluir_comentario_de_outro_usuario_retorna_403(cliente):
+    cadastrar_e_entrar(cliente, usuario="ana")
+    cliente.post(URL_COMENTAR, data={"texto": "Comentário da Ana"})
+    comentario_id = comentarios_do_documento()[0]["id"]
+    cliente.post("/logout")
+    cadastrar_e_entrar(cliente, usuario="bia")
+
+    resposta = cliente.post(f"/comentarios/{comentario_id}/excluir")
+
+    assert resposta.status_code == 403
+    assert len(comentarios_do_documento()) == 1
