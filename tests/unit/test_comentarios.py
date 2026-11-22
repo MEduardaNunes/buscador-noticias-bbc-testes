@@ -92,3 +92,12 @@ class TestServicoComentarios:
     def test_rejeita_comentario_sem_usuario(self, servico, usuario):
         with pytest.raises(ValueError):
             servico.comentar(usuario, "business", "001", "Comentário")
+
+    def test_lista_apenas_comentarios_do_documento_em_ordem_de_publicacao(self, servico):
+        servico.comentar("ana", "business", "001", "Primeiro")
+        servico.comentar("bia", "tech", "001", "Outro documento")
+        servico.comentar("duda", "business", "001", "Segundo")
+
+        textos = [c["texto"] for c in servico.listar_comentarios("business", "001")]
+
+        assert textos == ["Primeiro", "Segundo"]
