@@ -39,3 +39,15 @@ def test_publicar_comentario_sem_login_redireciona_e_nao_salva(cliente):
     assert resposta.status_code == 302
     assert resposta.location.endswith("/login")
     assert comentarios_do_documento() == []
+
+
+def test_comentario_publicado_aparece_na_pagina_do_documento(cliente):
+    cadastrar_e_entrar(cliente)
+
+    resposta = cliente.post(URL_COMENTAR, data={"texto": "Adorei a notícia"}, follow_redirects=True)
+    html = resposta.get_data(as_text=True)
+
+    assert resposta.status_code == 200
+    assert "Comentário publicado." in html
+    assert "Adorei a notícia" in html
+    assert "Comentários (1)" in html
