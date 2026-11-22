@@ -30,6 +30,9 @@ class RepositorioComentarios(Protocol):
     def remover(self, comentario_id: int) -> bool:
         ...
 
+    def remover_por_usuario(self, usuario: str) -> int:
+        ...
+
 
 class RepositorioComentariosSQLite:
     """Implementação concreta da persistência de comentários em SQLite."""
@@ -108,6 +111,14 @@ class RepositorioComentariosSQLite:
                 (comentario_id,),
             )
             return cursor.rowcount > 0
+
+    def remover_por_usuario(self, usuario: str) -> int:
+        with self._conexao_factory() as conexao:
+            cursor = conexao.execute(
+                "DELETE FROM comentarios WHERE usuario = ?",
+                (usuario,),
+            )
+            return cursor.rowcount
 
 
 class ServicoComentarios:
