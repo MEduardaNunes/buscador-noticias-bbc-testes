@@ -70,7 +70,7 @@ make test-e2e
 ```
 
 ## Uso de IA
-Ferramentas de IA generativa (como **Gemini** *[adicione outras, se houver]*) foram utilizadas como apoio durante o desenvolvimento para:
+Ferramentas de IA generativa (como **Gemini** e **Claude**) foram utilizadas como apoio durante o desenvolvimento para:
 - revisar os testes de unidade e End-to-End (E2E) de acordo com as recomendações e boas práticas da disciplina;
 - auxiliar na nomeação clara e descritiva de commits e funções de teste;
 - apoiar na identificação e correção de erros durante a implementação e execução das suítes;
