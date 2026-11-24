@@ -5,6 +5,17 @@ import re
 from src.utilitarios import mergesort
 
 
+def gerar_snippet_primeiras_frases(conteudo_documento):
+    """Retorna as duas primeiras frases do primeiro parágrafo do corpo do documento."""
+    paragrafos = re.split(r'\n\s*\n', conteudo_documento.strip(), maxsplit=1)
+    if not paragrafos or not paragrafos[0]:
+        return ""
+
+    texto = paragrafos[1].strip() if len(paragrafos) > 1 else paragrafos[0]
+    frases = re.split(r'(?<=[.!?])\s+', texto)
+    return " ".join(frases[:2]).strip()
+
+
 def _ler_conteudo_documento(doc_id, caminho_corpus, mapa_categorias):
     """
     Lê o conteúdo de um documento específico a partir do caminho fornecido.

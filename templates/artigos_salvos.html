@@ -22,17 +22,25 @@
         {% if artigos %}
             <ul>
                 {% for artigo in artigos %}
-                    <li class="resultado-item">
-                        <div class="arquivo-titulo">
-                            <span class="nome-arquivo">{{ artigo.id_completo }}</span>
-                            <form method="POST" action="{{ url_for('remover_artigo') }}">
-                                <input type="hidden" name="categoria" value="{{ artigo.categoria }}">
-                                <input type="hidden" name="doc_id" value="{{ artigo.doc_id }}">
-                                <input type="hidden" name="next" value="{{ url_for('artigos_salvos') }}">
-                                <button type="submit" class="botao-remover-salvo">Remover</button>
-                            </form>
-                        </div>
-                        <hr class="divisor">
+                    <li class="artigo-salvo-item">
+                        <a
+                            href="{{ url_for('exibir_documento', categoria=artigo.categoria, id_documento=artigo.doc_id) }}"
+                            class="resultado-link"
+                        >
+                            <div class="resultado-item">
+                                <p class="arquivo-titulo">
+                                    <span class="nome-arquivo">{{ artigo.id_completo }}</span>
+                                </p>
+                                <p class="snippet-texto">{{ artigo.snippet }}</p>
+                                <hr class="divisor">
+                            </div>
+                        </a>
+                        <form class="artigo-salvo-remover" method="POST" action="{{ url_for('remover_artigo') }}">
+                            <input type="hidden" name="categoria" value="{{ artigo.categoria }}">
+                            <input type="hidden" name="doc_id" value="{{ artigo.doc_id }}">
+                            <input type="hidden" name="next" value="{{ url_for('artigos_salvos') }}">
+                            <button type="submit" class="botao-remover-salvo">Remover</button>
+                        </form>
                     </li>
                 {% endfor %}
             </ul>

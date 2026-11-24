@@ -13,6 +13,7 @@ from src.comentarios import (
 from src.modelos import Categoria
 from src.classes.indexer import Corpus
 from src.busca import GerenciadorDeBusca
+from src.snippet import gerar_snippet_primeiras_frases
 import traceback
 
 load_dotenv()
@@ -384,6 +385,29 @@ def artigos_salvos():
 
     servico = obter_servico_artigos_salvos()
     artigos = servico.listar_artigos(session['usuario'])
+
+    raiz_corpus = caminho_corpus or os.path.abspath(
+        os.path.join(os.path.dirname(__file__), 'data-bbc')
+    )
+    categorias_validas = {categoria.name for categoria in Categoria}
+    for artigo in artigos:
+        categoria = artigo['categoria']
+        doc_id = artigo['doc_id']
+        if categoria not in categorias_validas or not doc_id.isdigit():
+            artigo['snippet'] = '[Documento inválido]'
+            continue
+
+        nome_arquivo = f"{int(doc_id):03d}.txt"
+        caminho_arquivo = os.path.join(raiz_corpus, categoria, nome_arquivo)
+        try:
+            with open(caminho_arquivo, 'r', encoding='latin-1') as arquivo:
+                conteudo = arquivo.read()
+        except FileNotFoundError:
+            print(f"[Aviso Artigos Salvos] Documento não encontrado: {caminho_arquivo}")
+            artigo['snippet'] = '[Documento não encontrado]'
+        else:
+            artigo['snippet'] = gerar_snippet_primeiras_frases(conteudo)
+
     return render_template('artigos_salvos.html', artigos=artigos)
 
 

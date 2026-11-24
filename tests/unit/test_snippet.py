@@ -1,7 +1,19 @@
-from src.snippet import gerar_snippet_formatado, destacar_termos_no_snippet
+from src.snippet import (
+    destacar_termos_no_snippet,
+    gerar_snippet_formatado,
+    gerar_snippet_primeiras_frases,
+)
 import pytest
 
 MAPA_CATEGORIAS = {1: "business"}
+
+
+def test_gerar_snippet_primeiras_frases_ignora_titulo_e_limita_duas_frases():
+    conteudo = "Título do artigo\n\nPrimeira frase. Segunda frase! Terceira frase."
+
+    snippet = gerar_snippet_primeiras_frases(conteudo)
+
+    assert snippet == "Primeira frase. Segunda frase!"
 
 
 @pytest.fixture

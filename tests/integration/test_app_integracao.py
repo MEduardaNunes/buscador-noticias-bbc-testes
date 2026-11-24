@@ -443,6 +443,32 @@ def test_salvar_artigo_persiste_e_lista_para_usuario_autenticado(cliente):
     assert "tech/001" in resposta.get_data(as_text=True)
 
 
+def test_artigos_salvos_exibe_snippet_e_link_para_documento(
+    cliente, monkeypatch, tmp_path
+):
+    pasta_categoria = tmp_path / "business"
+    pasta_categoria.mkdir()
+    (pasta_categoria / "007.txt").write_text(
+        "Título do artigo\n\nPrimeira frase. Segunda frase! Terceira frase.",
+        encoding="latin-1",
+    )
+    monkeypatch.setattr(app, "caminho_corpus", str(tmp_path))
+    cadastrar(cliente)
+    entrar(cliente)
+    cliente.post(
+        "/artigos-salvos/salvar",
+        data={"categoria": "business", "doc_id": "007"},
+    )
+
+    resposta = cliente.get("/artigos-salvos")
+    html = resposta.get_data(as_text=True)
+
+    assert resposta.status_code == 200
+    assert 'href="/documento/business/007"' in html
+    assert "Primeira frase. Segunda frase!" in html
+    assert "Terceira frase." not in html
+
+
 def test_salvar_artigo_duplicado_nao_duplica_na_lista(cliente):
     cadastrar(cliente)
     entrar(cliente)
@@ -455,7 +481,7 @@ def test_salvar_artigo_duplicado_nao_duplica_na_lista(cliente):
     )
 
     assert resposta.status_code == 200
-    assert resposta.get_data(as_text=True).count("sport/010") == 1
+    assert resposta.get_data(as_text=True).count('href="/documento/sport/010"') == 1
 
 def test_remover_artigo_exclui_registro_da_lista(cliente):
     cadastrar(cliente)
