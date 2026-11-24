@@ -20,10 +20,10 @@ describe('Busca e visualização de documento', () => {
 
     // realiza a busca pela interface
     cy.get('input[name="mensagem"]').type(termoBusca);
-    cy.get('button[type="submit"]').click();
+    cy.get('#botao-busca').click();
 
-    // redirecionou para /search e exibiu pelo menosum resultado clicável
-    cy.url().should('include', `/search?termo=${termoBusca}`);
+    // redirecionou para /busca e exibiu pelo menos um resultado clicável
+    cy.url().should('include', `/busca?termo=${termoBusca}`);
     cy.get('a.resultado-link').should('have.length.greaterThan', 0);
 
     // abre o primeiro documento da lista

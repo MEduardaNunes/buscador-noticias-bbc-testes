@@ -289,9 +289,53 @@ def test_busca_rejeita_mensagem_vazia(cliente):
     cadastrar(cliente)
     entrar(cliente)
 
-    resposta = cliente.post("/search", data={"mensagem": "   "})
+    resposta = cliente.post("/busca", data={"mensagem": "   "})
 
     assert resposta.status_code == 400
+
+
+def test_busca_post_redireciona_para_resultados_e_salva_historico(cliente, monkeypatch):
+    monkeypatch.setattr(app, "gerenciador_de_busca", object())
+
+    resposta = cliente.post(
+        "/busca",
+        data={"mensagem": "  football  "},
+        follow_redirects=False,
+    )
+
+    assert resposta.status_code == 302
+    assert "/busca?termo=football" in resposta.location
+    with cliente.session_transaction() as sessao:
+        assert sessao["historico"] == ["football"]
+
+
+def test_busca_get_executa_consulta_e_mantem_paginacao(cliente, monkeypatch):
+    class GerenciadorFalso:
+        def executar_busca(self, termo, num_pagina, tamanho_pagina):
+            assert termo == "oil"
+            assert num_pagina == 2
+            assert tamanho_pagina == 10
+            return [{
+                "id_completo": "business/001",
+                "categoria": "business",
+                "id_num": "001",
+                "score": "1.5",
+                "snippet": "<b>oil</b>",
+            }]
+
+    monkeypatch.setattr(app, "gerenciador_de_busca", GerenciadorFalso())
+
+    resposta = cliente.get("/busca?termo=oil&page=2")
+
+    assert resposta.status_code == 200
+    assert "business/001" in resposta.get_data(as_text=True)
+    assert "Página 2" in resposta.get_data(as_text=True)
+
+
+def test_rota_search_nao_esta_disponivel(cliente):
+    resposta = cliente.get("/search")
+
+    assert resposta.status_code == 404
 
 
 @pytest.mark.parametrize(
@@ -505,9 +549,9 @@ def test_historico_get_exibe_termos_salvos_em_ordem_reversa(cliente):
 
     html = resposta.get_data(as_text=True)
     assert resposta.status_code == 200
-    assert "/search?termo=music" in html
-    assert "/search?termo=economy" in html
-    assert html.index("/search?termo=economy") < html.index("/search?termo=music")
+    assert "/busca?termo=music" in html
+    assert "/busca?termo=economy" in html
+    assert html.index("/busca?termo=economy") < html.index("/busca?termo=music")
 
 def test_historico_post_redireciona_para_busca_com_termo(cliente):
     resposta = cliente.post(
@@ -517,7 +561,7 @@ def test_historico_post_redireciona_para_busca_com_termo(cliente):
     )
 
     assert resposta.status_code == 302
-    assert resposta.location.endswith("/search?termo=football")
+    assert resposta.location.endswith("/busca?termo=football")
 
 def test_historico_post_sem_mensagem_retorna_400(cliente):
     resposta = cliente.post("/historico", data={})
@@ -532,4 +576,23 @@ def test_ajuda_renderiza_pagina_com_instrucoes_de_busca(cliente):
     assert resposta.status_code == 200
     assert "Ajuda" in html
     assert "Operadores Lógicos" in html
+
+
+def test_navegacao_tem_ordem_padronizada_e_seta_condicional(cliente):
+    resposta_sem_anterior = cliente.get("/ajuda")
+    html_sem_anterior = resposta_sem_anterior.get_data(as_text=True)
+
+    assert resposta_sem_anterior.status_code == 200
+    assert 'id="botao-voltar"' not in html_sem_anterior
+    ids_botoes = ["botao-inicio", "perfil", "salvos", "historico", "ajuda", "logout"]
+    posicoes = [html_sem_anterior.index(f'id="{botao}"') for botao in ids_botoes]
+    assert posicoes == sorted(posicoes)
+
+    resposta_com_anterior = cliente.get(
+        "/ajuda",
+        headers={"Referer": "http://localhost/"},
+    )
+
+    assert resposta_com_anterior.status_code == 200
+    assert 'id="botao-voltar"' in resposta_com_anterior.get_data(as_text=True)
 # -----------

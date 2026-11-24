@@ -8,47 +8,7 @@
 </head>
 
 <body>
-    <div class = "container">
-        <div class = "item">
-            <a href = "{{ url_for('perfil') }}">
-                <button id = "perfil" aria-label="Perfil">
-                    <img src="{{ url_for('static', filename='perfil.png') }}" alt="perfil">
-                </button>
-            </a>
-        </div>
-
-        <div class="item">
-            <a href="{{ url_for('artigos_salvos') }}">
-               <button id="salvos" aria-label="Artigos salvos" title="Artigos salvos">
-                   <img src="{{ url_for('static', filename='salvos.png') }}" alt="Artigos salvos">
-               </button>
-           </a>
-       </div>
-
-        <div class = "item">
-            <a href = "{{ url_for('historico') }}">
-                <button id = "historico" aria-label="Histórico">
-                    <img src="{{ url_for('static', filename='historico.png') }}" alt="Histórico">
-                </button>
-            </a>
-        </div>
-
-        <div class = "item">
-            <a href = "{{ url_for('ajuda') }}">
-                <button id = "ajuda" aria-label="Como usar"> 
-                    <img src="{{ url_for('static', filename='ajuda.png') }}" alt="Ajuda">
-                </button>
-            </a>
-        </div>
-
-        <div class = "item">
-            <form method="POST" action="{{ url_for('logout') }}">
-                <button type="submit" id="logout" aria-label="Logout">
-                    <img src="{{ url_for('static', filename='logout.png') }}" alt="Logout">
-                </button>
-            </form>
-        </div>
-    </div>
+    {% include '_navegacao.html' %}
 
     <div class="central">
         <h1> Máquina de Busca </h1>
@@ -58,7 +18,7 @@
         </p>
         <p> Você pode realizar consultas de AND, OR e NOT sobre qualquer termo. </p>
 
-        <form method="POST" action="{{ url_for('search_results') }}">
+        <form method="POST" action="{{ url_for('busca_resultados') }}">
             <input type = "text" id = "mensagem" name = "mensagem" placeholder = "Insira sua busca aqui..." required>
             <button type = "submit" id = "botao-busca"> Buscar </button>
         </form>

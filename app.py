@@ -118,6 +118,12 @@ def obter_servico_comentarios() -> ServicoComentarios:
 
 inicializar_banco()
 
+@app.before_request
+def inicializar_sessao():
+    """Executa antes de cada rota para garantir que o histórico exista."""
+    session.permanent = False
+    if 'historico' not in session:
+        session['historico'] = []
 
 @app.route('/', methods=['GET'])
 def home():
@@ -207,8 +213,10 @@ def historico():
         session['historico'] = []
 
     if request.method == 'POST':
-        termo = request.form['mensagem']
-        return redirect(url_for('search_results', termo = termo))
+        termo = request.form.get('mensagem', '').strip()
+        if not termo:
+            abort(400, description='A consulta não pode estar vazia.')
+        return redirect(url_for('busca_resultados', termo=termo))
 
     return render_template('historico.html', historico = session['historico'])
 
@@ -308,14 +316,65 @@ def deletar_perfil():
     return redirect(url_for('login'))
 
 
-@app.route('/search', methods=['POST'])
-def search_results():
-    """Recebe uma consulta enviada pelo formulário."""
-    mensagem = request.form.get('mensagem', '').strip()
-    if not mensagem:
-        abort(400, description='A consulta não pode estar vazia.')
+def _processar_busca():
+    """Processa consultas enviadas por formulário ou pelos parâmetros da URL."""
+    resultados_pagina = []
+    termo = None
+    pagina_atual = 1
+    tamanho_pagina_fixo = 10
+    tem_proxima_pagina = False
 
-    return render_template('index.html')
+    if request.method == 'POST':
+        termo = request.form.get('mensagem', '').strip()
+        if not termo:
+            abort(400, description='A consulta não pode estar vazia.')
+
+        if termo not in session['historico']:
+            session['historico'].append(termo)
+            session['historico'] = session['historico'][-10:]
+            session.modified = True
+        return redirect(url_for(request.endpoint, termo=termo))
+
+    termo = request.args.get('termo', '').strip()
+    try:
+        pagina_atual = int(request.args.get('page', 1))
+        if pagina_atual < 1:
+            pagina_atual = 1
+    except (TypeError, ValueError):
+        pagina_atual = 1
+
+    if termo and gerenciador_de_busca:
+        try:
+            retorno_busca = gerenciador_de_busca.executar_busca(
+                termo,
+                num_pagina=pagina_atual,
+                tamanho_pagina=tamanho_pagina_fixo,
+            )
+            resultados_pagina = retorno_busca if isinstance(retorno_busca, list) else []
+
+            if not resultados_pagina and pagina_atual > 1:
+                return redirect(url_for(request.endpoint, termo=termo, page=1))
+
+            tem_proxima_pagina = len(resultados_pagina) == tamanho_pagina_fixo
+        except Exception as erro:
+            print(f"Erro durante o processamento da busca para '{termo}': {erro}")
+            traceback.print_exc()
+            resultados_pagina = []
+            tem_proxima_pagina = False
+
+    return render_template(
+        'resultados_busca.html',
+        termo=termo,
+        resultados=resultados_pagina,
+        pagina_atual=pagina_atual,
+        tem_proxima_pagina=tem_proxima_pagina,
+    )
+
+
+@app.route('/busca', methods=['GET', 'POST'])
+def busca_resultados():
+    return _processar_busca()
+
 
 @app.route('/artigos-salvos', methods=['GET'])
 def artigos_salvos():

@@ -6,15 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <div class="item">
-            <a href="{{ url_for('home') }}">
-                <button id="botao-inicio" aria-label="Inicio">
-                    <img src="{{ url_for('static', filename='icone-inicio.png') }}" alt="Inicio">
-                </button>
-            </a>
-        </div>
-    </div>
+    {% include '_navegacao.html' %}
 
     <div class="central">
         <h1>Artigos Salvos</h1>

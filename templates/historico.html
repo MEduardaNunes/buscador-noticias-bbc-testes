@@ -8,29 +8,7 @@
 </head>
 
 <body>
-    <div class = "container">
-        <div class = "item">
-            <a href = "{{ url_for('home') }}">
-                 <button id = "botao-inicio" aria-label="Inicio">
-                    <img src="{{ url_for('static', filename='icone-inicio.png') }}" alt="Inicio">
-                </button>
-            </a>
-        </div>
-
-        <div class = "item">
-            <a href = "{{ url_for('ajuda') }}">
-                <button id = "ajuda"> 
-                    <img src="{{ url_for('static', filename='ajuda.png') }}" alt="Ajuda">
-                </button>
-            </a>
-        </div>
-        
-        <div class = "item">
-            <button id = "botao-voltar" onclick = "window.history.back()"> 
-                <img src="{{ url_for('static', filename='voltar.png') }}" alt="Voltar">
-            </button>
-        </div>
-    </div>
+    {% include '_navegacao.html' %}
     
     <div class="central">
         <h1> Máquina de Busca </h1>
@@ -53,7 +31,7 @@
             <h3> HISTÓRICO DE BUSCAS </h3>
             <ul> 
                 {% for termo in historico|reverse %}
-                    <li><a class = "item_historico" href = "{{ url_for('search_results') }}?termo={{ termo }}">
+                    <li><a class = "item_historico" href = "{{ url_for('busca_resultados', termo=termo) }}">
                         {{ termo }}
                     </a></li>
                 {% endfor %}

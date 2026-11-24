@@ -8,45 +8,7 @@
 </head>
 
 <body>
-    <div class = "container">
-        <div class = "item">
-            <button id = "botao-voltar" onclick = "window.history.back()"> 
-                <img src="{{ url_for('static', filename='voltar.png') }}" alt="Voltar">
-            </button>
-        </div>
-
-        <div class = "item">
-            <a href = "{{ url_for('perfil') }}">
-                <button id = "perfil">
-                    <img src="{{ url_for('static', filename='perfil.png') }}" alt="perfil">
-                </button>
-            </a>
-        </div>
-
-        <div class = "item">
-            <a href = "{{ url_for('historico') }}">
-                <button id = "historico">
-                    <img src="{{ url_for('static', filename='historico.png') }}" alt="Histórico">
-                </button>
-            </a>
-        </div>
-
-        <div class = "item">
-            <a href = "{{ url_for('ajuda') }}">
-                <button id = "ajuda"> 
-                    <img src="{{ url_for('static', filename='ajuda.png') }}" alt="Ajuda">
-                </button>
-            </a>
-        </div>
-
-        <div class = "item">
-            <form method="POST" action="{{ url_for('logout') }}">
-                <button type="submit" id="logout">
-                    <img src="{{ url_for('static', filename='logout.png') }}" alt="Logout">
-                </button>
-            </form>
-        </div>
-    </div>
+    {% include '_navegacao.html' %}
 
     <main class="central auth-central">
         <h1>Meu perfil</h1>

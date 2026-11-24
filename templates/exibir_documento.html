@@ -6,13 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
 <body>
-    <div class = "container">
-        <div class = "item">
-            <button id = "botao-voltar" onclick = "window.history.back()"> 
-                <img src="{{ url_for('static', filename='voltar.png') }}" alt="Voltar">
-            </button>
-        </div>
-    </div>
+    {% include '_navegacao.html' %}
 
     <div class="central">
         <h1>{{ documento.categoria | capitalize }}/{{ documento.id }}</h1> 

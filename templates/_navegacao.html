@@ -1,0 +1,57 @@
+<div class="container">
+    {% if request.referrer and request.referrer.startswith(request.host_url) %}
+        <div class="item">
+            <button type="button" id="botao-voltar" onclick="window.history.back()" aria-label="Voltar">
+                <img src="{{ url_for('static', filename='voltar.png') }}" alt="Voltar">
+            </button>
+        </div>
+    {% endif %}
+    
+    <div class="item">
+        <a href="{{ url_for('home') }}">
+            <button id="botao-inicio" aria-label="Início">
+                <img src="{{ url_for('static', filename='icone-inicio.png') }}" alt="Início">
+            </button>
+        </a>
+    </div>
+
+    <div class="item">
+        <a href="{{ url_for('perfil') }}">
+            <button id="perfil" aria-label="Perfil">
+                <img src="{{ url_for('static', filename='perfil.png') }}" alt="Perfil">
+            </button>
+        </a>
+    </div>
+
+    <div class="item">
+        <a href="{{ url_for('artigos_salvos') }}">
+            <button id="salvos" aria-label="Artigos salvos" title="Artigos salvos">
+                <img src="{{ url_for('static', filename='salvos.png') }}" alt="Artigos salvos">
+            </button>
+        </a>
+    </div>
+
+    <div class="item">
+        <a href="{{ url_for('historico') }}">
+            <button id="historico" aria-label="Histórico">
+                <img src="{{ url_for('static', filename='historico.png') }}" alt="Histórico">
+            </button>
+        </a>
+    </div>
+
+    <div class="item">
+        <a href="{{ url_for('ajuda') }}">
+            <button id="ajuda" aria-label="Ajuda">
+                <img src="{{ url_for('static', filename='ajuda.png') }}" alt="Ajuda">
+            </button>
+        </a>
+    </div>
+
+    <div class="item">
+        <form method="POST" action="{{ url_for('logout') }}">
+            <button type="submit" id="logout" aria-label="Sair">
+                <img src="{{ url_for('static', filename='logout.png') }}" alt="Sair">
+            </button>
+        </form>
+    </div>
+</div>
