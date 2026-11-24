@@ -35,7 +35,7 @@ test-e2e: venv
 test: test-unit test-integration
 
 coverage: venv
-	$(PYTEST) tests/ --cov=. --cov-report=term-missing
+	$(PYTEST) -v --cov=app --cov=src --cov-branch --cov-report=term-missing tests/
 
 clean:
 	rm -rf $(VENV_DIR) .pytest_cache .coverage htmlcov
