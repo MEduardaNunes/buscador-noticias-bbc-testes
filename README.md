@@ -77,8 +77,3 @@ Ferramentas de IA generativa (como **Gemini** e **Claude**) foram utilizadas com
 - verificar pontos do código não cobertos pela suíte de testes e acrescentar testes para esses casos.
 
 Todas as sugestões foram revisadas, adaptadas ao código do projeto e validadas pela equipe.
-
-## TO-DO
-- Publicar relatório de cobertura através do GitHub Actions
-- Colocar sistema em produção
-- Criar vídeo (máximo de 5 minutos): o vídeo deve apresentar brevemente: (1) o sistema desenvolvido, (2) as tecnologias utilizadas, (3) como as ferramentas de IA foram empregadas e (4) os testes implementados. O vídeo deve ser publicado no YouTube.
