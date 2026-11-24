@@ -118,6 +118,7 @@ def obter_servico_comentarios() -> ServicoComentarios:
     return ServicoComentarios(repositorio)
 
 inicializar_banco()
+inicializar_indice()
 
 @app.before_request
 def inicializar_sessao():
