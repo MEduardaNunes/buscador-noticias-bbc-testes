@@ -481,7 +481,7 @@ def test_salvar_artigo_duplicado_nao_duplica_na_lista(cliente):
     )
 
     assert resposta.status_code == 200
-    assert resposta.get_data(as_text=True).count('href="/documento/sport/010"') == 1
+    assert resposta.get_data(as_text=True).count('class="artigo-salvo-item"') == 1
 
 def test_remover_artigo_exclui_registro_da_lista(cliente):
     cadastrar(cliente)

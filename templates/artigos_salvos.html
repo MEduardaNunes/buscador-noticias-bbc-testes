@@ -23,24 +23,29 @@
             <ul>
                 {% for artigo in artigos %}
                     <li class="artigo-salvo-item">
-                        <a
-                            href="{{ url_for('exibir_documento', categoria=artigo.categoria, id_documento=artigo.doc_id) }}"
-                            class="resultado-link"
-                        >
-                            <div class="resultado-item">
-                                <p class="arquivo-titulo">
+                        <div class="resultado-item">
+                            <div class="arquivo-titulo">
+                                <a
+                                    href="{{ url_for('exibir_documento', categoria=artigo.categoria, id_documento=artigo.doc_id) }}"
+                                    class="resultado-link artigo-salvo-titulo"
+                                >
                                     <span class="nome-arquivo">{{ artigo.id_completo }}</span>
-                                </p>
-                                <p class="snippet-texto">{{ artigo.snippet }}</p>
-                                <hr class="divisor">
+                                </a>
+                                <form class="artigo-salvo-remover" method="POST" action="{{ url_for('remover_artigo') }}">
+                                    <input type="hidden" name="categoria" value="{{ artigo.categoria }}">
+                                    <input type="hidden" name="doc_id" value="{{ artigo.doc_id }}">
+                                    <input type="hidden" name="next" value="{{ url_for('artigos_salvos') }}">
+                                    <button type="submit" class="botao-remover-salvo">Remover</button>
+                                </form>
                             </div>
-                        </a>
-                        <form class="artigo-salvo-remover" method="POST" action="{{ url_for('remover_artigo') }}">
-                            <input type="hidden" name="categoria" value="{{ artigo.categoria }}">
-                            <input type="hidden" name="doc_id" value="{{ artigo.doc_id }}">
-                            <input type="hidden" name="next" value="{{ url_for('artigos_salvos') }}">
-                            <button type="submit" class="botao-remover-salvo">Remover</button>
-                        </form>
+                            <a
+                                href="{{ url_for('exibir_documento', categoria=artigo.categoria, id_documento=artigo.doc_id) }}"
+                                class="resultado-link"
+                            >
+                                <p class="snippet-texto">{{ artigo.snippet }}</p>
+                            </a>
+                            <hr class="divisor">
+                        </div>
                     </li>
                 {% endfor %}
             </ul>

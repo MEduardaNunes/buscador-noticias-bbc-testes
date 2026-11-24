@@ -37,7 +37,7 @@ describe('Gerenciamento de artigos salvos', () => {
 
     // remove o artigo diretamente pela lista de salvos
     cy.contains('.resultado-item', idCompleto)
-      .find('.botao-remover-salvo')
+      .find('.artigo-salvo-remover')
       .click();
 
     // o artigo não consta mais na lista

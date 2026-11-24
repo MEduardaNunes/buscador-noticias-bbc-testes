@@ -212,18 +212,23 @@ button:hover {
 }
 
 .artigo-salvo-item {
-    position: relative;
+    margin: 0;
 }
 
-.artigo-salvo-item .arquivo-titulo {
-    padding-right: 110px;
+.artigo-salvo-titulo {
+    display: block;
+    flex: 1;
 }
 
 .artigo-salvo-remover {
-    position: absolute;
-    top: 0;
-    right: 0;
     margin: 0;
+    flex-shrink: 0;
+}
+
+.artigo-salvo-item .resultado-item:hover {
+    transform: scale(1.015);
+    background-color: #fee9f8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .score-final {
